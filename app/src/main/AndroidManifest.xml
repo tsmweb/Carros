@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="br.com.tsmweb.carros">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".CarrosApplication"
         android:allowBackup="true"

@@ -6,7 +6,7 @@ import android.util.Log;
 
 public class DebugActivity extends AppCompatActivity {
 
-    protected static final String TAG = "carros";
+    protected final String TAG = this.getClassName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

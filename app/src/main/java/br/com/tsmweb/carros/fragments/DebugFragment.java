@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 public class DebugFragment extends Fragment {
 
-    protected static final String TAG = "carros";
+    protected final String TAG = this.getClassName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
