@@ -1,12 +1,16 @@
 package br.com.tsmweb.carros.activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -14,9 +18,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import br.com.tsmweb.carros.R;
+import br.com.tsmweb.carros.adapter.TabsAdapter;
 import br.com.tsmweb.carros.databinding.NavDrawerHeaderBinding;
 import br.com.tsmweb.carros.fragments.AboutDialog;
 import br.com.tsmweb.carros.fragments.CarrosFragment;
+import br.com.tsmweb.carros.fragments.CarrosTabFragment;
 import br.com.tsmweb.carros.fragments.SiteLivroFragment;
 import br.com.tsmweb.carros.utils.ImageUtils;
 import br.com.tsmweb.carros.viewModel.NavHeaderViewModel;
@@ -41,8 +47,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // Carrega informações da conta no NavigationView
         updateNavViewValues("Tiago Martins", "tiago.tsmweb@gmail.com", R.drawable.ic_logo_user);
 
+        setViewPagerTabs();
+
         // Inicializa o layout principal com o fragment dos carros
-        replaceFragment(CarrosFragment.newInstance(R.string.todos));
+        //replaceFragment(new CarrosTabFragment());
+
+        // FAB
+        findViewById(R.id.fab).setOnClickListener(v -> {
+            snack(v, "Exemplo de FAB Button.");
+        });
     }
 
     private void setupNavDrawer(Toolbar toolbar) {
@@ -71,24 +84,47 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         navHeaderViewModel.foto.set(ImageUtils.getUriToDrawable(this, foto));
     }
 
+    // Configura as Tabs + ViewPager
+    private void setViewPagerTabs() {
+        // ViewPager
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setOffscreenPageLimit(2);
+        viewPager.setAdapter(new TabsAdapter(getContext(), getSupportFragmentManager()));
+
+        // Tabs
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        // Cria as tabs com o mesmo adapter utilizado pelo ViewPager
+        tabLayout.setupWithViewPager(viewPager);
+
+        int cor = ContextCompat.getColor(getContext(), R.color.white);
+        // Cor branca no texto (o fundo azul foi definido no layout)
+        tabLayout.setTabTextColors(cor, cor);
+    }
+
     // Trata os eventos de click do menu lateral (NavigationDrawer)
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.nav_item_carros_todos:
-                replaceFragment(CarrosFragment.newInstance(R.string.todos));
+                // Nada aqui, pois somente a MainActivity tem menu lateral
                 break;
             case R.id.nav_item_carros_classicos:
-                replaceFragment(CarrosFragment.newInstance(R.string.classicos));
+                Intent intent = new Intent(getContext(), CarrosActivity.class);
+                intent.putExtra("tipo", R.string.classicos);
+                startActivity(intent);
                 break;
             case R.id.nav_item_carros_esportivos:
-                replaceFragment(CarrosFragment.newInstance(R.string.esportivos));
+                intent = new Intent(getContext(), CarrosActivity.class);
+                intent.putExtra("tipo", R.string.esportivos);
+                startActivity(intent);
                 break;
             case R.id.nav_item_carros_luxo:
-                replaceFragment(CarrosFragment.newInstance(R.string.luxo));
+                intent = new Intent(getContext(), CarrosActivity.class);
+                intent.putExtra("tipo", R.string.luxo);
+                startActivity(intent);
                 break;
             case R.id.nav_item_site_livro:
-                replaceFragment(new SiteLivroFragment());
+                startActivity(new Intent(getContext(), SiteLivroActivity.class));
                 break;
             case R.id.nav_item_settings:
                 toast("Clicou em configurações");

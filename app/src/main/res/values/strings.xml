@@ -13,41 +13,57 @@ Versao %s<br><br>
 <a href="https://plus.google.com/+RicardoLecheta">https://plus.google.com/+RicardoLecheta</a>
 	]]>
 	</string>
-    <string name="about_dialog_title">Livro Android</string>
+    <string name="open_drawer">Abrir Menu</string>
 
     <!-- C -->
     <string name="carros">Carros</string>
     <string name="configuracoes">Configurações</string>
     <string name="classicos">Clássicos</string>
+    <string name="title_activity_carro">Carro</string>
+    <string name="confirmar">Confirmar</string>
+
+    <!-- D -->
+    <string name="descricao">Descrição</string>
 
     <!-- E -->
     <string name="esportivos">Esportivos</string>
 
+    <!-- F -->
+    <string name="close_drawer">Fechar Menu</string>
+
     <!-- L -->
     <string name="luxo">Luxo</string>
+    <string name="about_dialog_title">Livro Android</string>
+    <string name="latitudeLongitude">Lat / Lng</string>
 
     <!-- N -->
     <string name="nav_drawer_username">Ricardo Lecheta</string>
     <string name="nav_drawer_email">rlecheta@gmail.com</string>
 
+    <!-- M -->
+    <string name="mapa">Mapa</string>
+    <string name="msg_alerta_permissao">Para utilizar este aplicativo, você precisa aceitar as permissões.</string>
+    <string name="msg_error_conexao_indisponivel">Conexão indisponível. Verifique seu Wi-Fi ou 3G.</string>
+
     <!-- O -->
     <string name="ok">OK</string>
+
+    <!-- P -->
+    <string name="permissoes_negadas">Permissões Negadas</string>
 
     <!-- S -->
     <string name="sobre">Sobre</string>
     <string name="site_do_livro">Site do Livro</string>
+    <string name="share">Share</string>
+
+    <!-- T -->
+    <string name="todos">Todos</string>
 
     <!-- V -->
     <string name="vazio" />
+    <string name="video">Vídeo</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_carro">Carro</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_teste">TesteActivity</string>
-    <string name="open_drawer">Abrir Menu</string>
-    <string name="close_drawer">Fechar Menu</string>
-    <string name="todos">Todos</string>
 
 </resources>

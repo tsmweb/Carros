@@ -86,8 +86,15 @@ public class BaseActivity extends DebugActivity {
         return toolbar;
     }
 
-    protected void replaceFragment(Fragment frag) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, frag, "TAG").commit();
+    protected void alertaValidacaoPermissao() {
+        AlertUtils.alert(
+                getContext(),
+                R.string.permissoes_negadas,
+                R.string.msg_alerta_permissao,
+                R.string.confirmar,
+                () -> {
+                    finish();
+                });
     }
 
 }

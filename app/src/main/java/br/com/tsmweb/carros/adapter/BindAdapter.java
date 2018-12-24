@@ -6,14 +6,26 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import br.com.tsmweb.carros.R;
+
+
 public class BindAdapter {
 
     @BindingAdapter("android:src")
     public static void bindUriToImageView(ImageView imageView, Uri uri) {
         Picasso.get()
                 .load(uri)
+                .placeholder(R.drawable.progress_animation)
                 .fit()
                 .centerCrop()
+                .into(imageView);
+    }
+
+    @BindingAdapter("android:src")
+    public static void bindUrlToImageView(ImageView imageView, String url) {
+        Picasso.get()
+                .load(url)
+                .placeholder(R.drawable.progress_animation)
                 .into(imageView);
     }
 

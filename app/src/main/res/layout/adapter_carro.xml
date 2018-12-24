@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="carro"
+            type="br.com.tsmweb.carros.domain.Carro" />
+
+        <variable
+            name="viewModel"
+            type="br.com.tsmweb.carros.viewModel.CarrosViewModal" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/tools"
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        app:cardElevation="3dp"
+        app:cardPreventCornerOverlap="false"
+        app:cardUseCompatPadding="false"
+        card_view:cardCornerRadius="2dp"
+        card_view:cardElevation="6dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:onClick="@{() -> viewModel.onCarroItemClick(carro)}">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:textSize="20sp"
+                android:text="@{carro.nome}"/>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <!-- Foto do Carro -->
+                <ImageView
+                    android:id="@+id/img"
+                    android:layout_width="@dimen/img_carro_adapter_width"
+                    android:layout_height="@dimen/img_carro_adapter_height"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="6dp"
+                    android:src="@{carro.urlFoto}"/>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+</layout>
