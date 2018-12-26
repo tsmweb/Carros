@@ -5,16 +5,19 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.activity.CarroActivity;
 import br.com.tsmweb.carros.databinding.FragmentCarrosBinding;
+import br.com.tsmweb.carros.utils.AndroidUtils;
 import br.com.tsmweb.carros.viewModel.CarrosViewModal;
 
 public class CarrosFragment extends BaseFragment {
@@ -23,7 +26,10 @@ public class CarrosFragment extends BaseFragment {
     private FragmentCarrosBinding binding;
 
     private int tipo;
-    protected RecyclerView recyclerView;
+    private boolean pullToRefresh;
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeLayout;
 
     // Método para instanciar esse fragment pelo tipo
     public static CarrosFragment newInstance(int tipo) {
@@ -56,6 +62,16 @@ public class CarrosFragment extends BaseFragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(true);
 
+        progressBar = view.findViewById(R.id.progress);
+
+        // Swipe to Refresh
+        swipeLayout = view.findViewById(R.id.swipeToRefresh);
+        swipeLayout.setOnRefreshListener(OnRefreshListener());
+        swipeLayout.setColorSchemeResources(
+                R.color.refresh_progress_1,
+                R.color.refresh_progress_2,
+                R.color.refresh_progress_3);
+
         return view;
     }
 
@@ -70,9 +86,43 @@ public class CarrosFragment extends BaseFragment {
         }
 
         binding.setViewModel(carrosViewModal);
-
+        startViewModalObservable();
         carrosViewModal.loadCarros(tipo);
+    }
 
+    private SwipeRefreshLayout.OnRefreshListener OnRefreshListener() {
+        return () -> {
+            // Atualiza ao fazer o gesto Pull to Refresh
+
+            // Valida se existe conexão ao fazer o gesto Pull to Refresh
+            if (AndroidUtils.isNetworkAvailable(getContext())) {
+                pullToRefresh = true;
+                carrosViewModal.loadCarros(tipo);
+            } else {
+                swipeLayout.setRefreshing(false);
+                snack(recyclerView, R.string.msg_error_conexao_indisponivel);
+            }
+        };
+    }
+
+    private void startViewModalObservable() {
+        // Observa o carregamento das informações do web service
+        carrosViewModal.getLoading().observe(this, loading -> {
+            if (pullToRefresh) {
+                if (!loading) {
+                    swipeLayout.setRefreshing(false);
+                    pullToRefresh = false;
+                }
+            } else {
+                if (loading) {
+                    progressBar.setVisibility(View.VISIBLE);
+                } else {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        // Observa e recebe o carro selecionado
         carrosViewModal.getSelected().observe(this, carro -> {
             Intent intent = new Intent(getContext(), CarroActivity.class);
             intent.putExtra("carro", carro);

@@ -13,18 +13,27 @@
         android:layout_height="match_parent"
         tools:context=".fragments.CarrosFragment">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeToRefresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:cacheColorHint="@android:color/transparent"
-            android:clipToPadding="false"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            android:listSelector="@android:color/transparent"
-            android:scrollbarStyle="outsideOverlay"
-            android:scrollbars="vertical"
-            android:adapter="@{viewModel.adapter}" />
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cacheColorHint="@android:color/transparent"
+                android:clipToPadding="false"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:listSelector="@android:color/transparent"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical"
+                android:adapter="@{viewModel.adapter}" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <include layout="@layout/include_progress" />
 
     </FrameLayout>
 

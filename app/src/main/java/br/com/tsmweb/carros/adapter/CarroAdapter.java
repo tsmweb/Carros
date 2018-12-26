@@ -52,6 +52,10 @@ public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHo
         return this.carros != null ? this.carros.size() : 0;
     }
 
+    public List<Carro> getCarros() {
+        return carros;
+    }
+
     public void setCarros(List<Carro> carros) {
         this.carros = carros;
         notifyDataSetChanged();
