@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,6 @@ public class CarrosFragment extends BaseFragment {
     private FragmentCarrosBinding binding;
 
     private int tipo;
-    private boolean pullToRefresh;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeLayout;
@@ -87,16 +87,18 @@ public class CarrosFragment extends BaseFragment {
 
         binding.setViewModel(carrosViewModal);
         startViewModalObservable();
-        carrosViewModal.loadCarros(tipo);
+
+        if (savedInstanceState == null) {
+            carrosViewModal.loadCarros(tipo);
+        }
     }
 
     private SwipeRefreshLayout.OnRefreshListener OnRefreshListener() {
         return () -> {
             // Atualiza ao fazer o gesto Pull to Refresh
-
             // Valida se existe conexão ao fazer o gesto Pull to Refresh
             if (AndroidUtils.isNetworkAvailable(getContext())) {
-                pullToRefresh = true;
+                carrosViewModal.setPullToRefresh(true);
                 carrosViewModal.loadCarros(tipo);
             } else {
                 swipeLayout.setRefreshing(false);
@@ -108,10 +110,12 @@ public class CarrosFragment extends BaseFragment {
     private void startViewModalObservable() {
         // Observa o carregamento das informações do web service
         carrosViewModal.getLoading().observe(this, loading -> {
-            if (pullToRefresh) {
+            if (carrosViewModal.getPullToRefresh()) {
                 if (!loading) {
                     swipeLayout.setRefreshing(false);
-                    pullToRefresh = false;
+                    carrosViewModal.setPullToRefresh(false);
+                } else {
+                    swipeLayout.setRefreshing(true);
                 }
             } else {
                 if (loading) {

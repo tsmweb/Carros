@@ -22,6 +22,7 @@ public class CarrosViewModal extends AndroidViewModel {
     private CarroAdapter adapter;
     private MutableLiveData<Carro> selected;
     private MutableLiveData<Boolean> loading;
+    private boolean pullToRefresh;
 
     public CarrosViewModal(@NonNull Application application) {
         super(application);
@@ -45,6 +46,14 @@ public class CarrosViewModal extends AndroidViewModel {
         return loading;
     }
 
+    public boolean getPullToRefresh() {
+        return pullToRefresh;
+    }
+
+    public void setPullToRefresh(boolean pullToRefresh) {
+        this.pullToRefresh = pullToRefresh;
+    }
+
     public void onCarroItemClick(Carro carro) {
         selected.postValue(carro);
     }
@@ -61,7 +70,7 @@ public class CarrosViewModal extends AndroidViewModel {
             loading.postValue(true);
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(3000);
                 // Busca os carros em background (Thread)
                 return CarroService.getCarros(getApplication().getApplicationContext(), params[0]);
             } catch (Exception e) {

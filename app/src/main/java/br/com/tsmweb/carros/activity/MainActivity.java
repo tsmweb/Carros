@@ -25,6 +25,7 @@ import br.com.tsmweb.carros.fragments.CarrosFragment;
 import br.com.tsmweb.carros.fragments.CarrosTabFragment;
 import br.com.tsmweb.carros.fragments.SiteLivroFragment;
 import br.com.tsmweb.carros.utils.ImageUtils;
+import br.com.tsmweb.carros.utils.Prefs;
 import br.com.tsmweb.carros.viewModel.NavHeaderViewModel;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -99,6 +100,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         int cor = ContextCompat.getColor(getContext(), R.color.white);
         // Cor branca no texto (o fundo azul foi definido no layout)
         tabLayout.setTabTextColors(cor, cor);
+
+        // Lê o índice da última tab utilizada no aplicativo
+        int tabIdx = Prefs.getInteger(getContext(), "tabIdx");
+        viewPager.setCurrentItem(tabIdx);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+
+            @Override
+            public void onPageSelected(int position) {
+                // Salva o índice da página/tab selecionada
+                Prefs.setInteger(getContext(), "tabIdx", viewPager.getCurrentItem());
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     // Trata os eventos de click do menu lateral (NavigationDrawer)
@@ -127,7 +148,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 startActivity(new Intent(getContext(), SiteLivroActivity.class));
                 break;
             case R.id.nav_item_settings:
-                toast("Clicou em configurações");
+                startActivity(new Intent(getContext(), ConfiguracoesActivity.class));
                 break;
         }
 
