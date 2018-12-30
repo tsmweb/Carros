@@ -36,7 +36,7 @@ public class PermissionUtils {
             ActivityCompat.requestPermissions(activity, novasPermissoes, requestCode);
         }
 
-        return  true;
+        return false;
     }
 
 }
