@@ -59,11 +59,17 @@ public class CarrosViewModal extends AndroidViewModel {
     }
 
     public void loadCarros(int tipo) {
-       new GetCarrosTask().execute(tipo);
+       new GetCarrosTask(pullToRefresh).execute(tipo);
     }
 
     // Task para buscar os carros
     private class GetCarrosTask extends AsyncTask<Integer, Void, List<Carro>> {
+
+        private boolean refresh;
+
+        public GetCarrosTask(boolean refresh) {
+            this.refresh = refresh;
+        }
 
         @Override
         protected List<Carro> doInBackground(Integer... params) {
@@ -72,7 +78,7 @@ public class CarrosViewModal extends AndroidViewModel {
             try {
                 Thread.sleep(3000);
                 // Busca os carros em background (Thread)
-                return CarroService.getCarros(getApplication().getApplicationContext(), params[0]);
+                return CarroService.getCarros(getApplication().getApplicationContext(), params[0], refresh);
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage(), e);
                 return null;
