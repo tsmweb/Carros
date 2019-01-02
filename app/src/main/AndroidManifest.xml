@@ -24,7 +24,8 @@
         </activity>
         <activity
             android:name=".activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar.NavDrawer" />
+            android:theme="@style/AppTheme.NoActionBar.NavDrawer"
+            android:launchMode="singleTop"/>
         <activity
             android:name=".activity.CarroActivity"
             android:parentActivityName=".activity.MainActivity">

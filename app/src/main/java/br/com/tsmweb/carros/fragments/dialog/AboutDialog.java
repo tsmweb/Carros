@@ -1,4 +1,4 @@
-package br.com.tsmweb.carros.fragments;
+package br.com.tsmweb.carros.fragments.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

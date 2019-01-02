@@ -23,7 +23,6 @@ public class CarroActivity extends BaseActivity {
         setUpToolbar();
         // Título da Toolbar e botão up navigation
         Carro carro = getIntent().getParcelableExtra("carro");
-        getSupportActionBar().setTitle(carro.getNome());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Configura o ViewModal
@@ -43,4 +42,5 @@ public class CarroActivity extends BaseActivity {
                     .commit();
         }
     }
+
 }

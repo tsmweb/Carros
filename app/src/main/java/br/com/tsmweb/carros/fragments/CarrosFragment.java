@@ -15,6 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.squareup.otto.Subscribe;
+
+import br.com.tsmweb.carros.CarrosApplication;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.activity.CarroActivity;
 import br.com.tsmweb.carros.databinding.FragmentCarrosBinding;
@@ -50,6 +53,9 @@ public class CarrosFragment extends BaseFragment {
             // Lê o tipo dos argumentos
             this.tipo = getArguments().getInt("tipo");
         }
+
+        // Registra a classe para receber eventos
+        CarrosApplication.getInstance().getBus().register(this);
     }
 
     @Override
@@ -134,4 +140,17 @@ public class CarrosFragment extends BaseFragment {
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Cancela o recebimento de eventos
+        CarrosApplication.getInstance().getBus().unregister(this);
+    }
+
+    @Subscribe
+    public void onBusAtualizarListaCarros(String refresh) {
+        // Recebeu o evento, atualiza a lista
+        carrosViewModal.loadCarros(tipo);
+    }
 }

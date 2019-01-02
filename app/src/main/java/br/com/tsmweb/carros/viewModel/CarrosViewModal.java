@@ -76,7 +76,7 @@ public class CarrosViewModal extends AndroidViewModel {
             loading.postValue(true);
 
             try {
-                Thread.sleep(3000);
+                //Thread.sleep(2000);
                 // Busca os carros em background (Thread)
                 return CarroService.getCarros(getApplication().getApplicationContext(), params[0], refresh);
             } catch (Exception e) {

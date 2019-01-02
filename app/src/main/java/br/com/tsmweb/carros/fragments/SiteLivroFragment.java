@@ -14,6 +14,7 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 import br.com.tsmweb.carros.R;
+import br.com.tsmweb.carros.fragments.dialog.AboutDialog;
 
 public class SiteLivroFragment extends BaseFragment {
 
