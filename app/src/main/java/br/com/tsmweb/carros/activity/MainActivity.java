@@ -1,5 +1,6 @@
 package br.com.tsmweb.carros.activity;
 
+import android.app.backup.BackupManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -29,6 +30,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private NavHeaderViewModel navHeaderViewModel;
+    private BackupManager backupManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         findViewById(R.id.fab).setOnClickListener(v -> {
             snack(v, "Exemplo de FAB Button.");
         });
+
+        // Gerenciador de backup
+        backupManager = new BackupManager(getContext());
     }
 
     private void setupNavDrawer(Toolbar toolbar) {
@@ -109,6 +114,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onPageSelected(int position) {
                 // Salva o índice da página/tab selecionada
                 Prefs.setInteger(getContext(), "tabIdx", viewPager.getCurrentItem());
+
+                // Faz o backup
+                backupManager.dataChanged();
             }
 
             @Override

@@ -2,8 +2,11 @@ package br.com.tsmweb.carros.viewModel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -15,23 +18,22 @@ import br.com.tsmweb.carros.adapter.CarroAdapter;
 import br.com.tsmweb.carros.domain.Carro;
 import br.com.tsmweb.carros.domain.CarroService;
 
-public class CarrosViewModal extends AndroidViewModel {
+public class CarrosViewModal extends AndroidViewModel implements LifecycleObserver {
 
     private static final String TAG = CarroViewModal.class.getName();
 
-    private CarroAdapter adapter;
+    private CarroAdapter adapter = new CarroAdapter(this);
     private MutableLiveData<Carro> selected;
-    private MutableLiveData<Boolean> loading;
+    private MutableLiveData<Boolean> loading = new MutableLiveData<>();
     private boolean pullToRefresh;
 
     public CarrosViewModal(@NonNull Application application) {
         super(application);
     }
 
-    public void init() {
-        adapter = new CarroAdapter(this);
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    private void reset() {
         selected = new MutableLiveData<>();
-        loading = new MutableLiveData<>();
     }
 
     public CarroAdapter getAdapter() {
@@ -76,7 +78,7 @@ public class CarrosViewModal extends AndroidViewModel {
             loading.postValue(true);
 
             try {
-                //Thread.sleep(2000);
+                Thread.sleep(3000);
                 // Busca os carros em background (Thread)
                 return CarroService.getCarros(getApplication().getApplicationContext(), params[0], refresh);
             } catch (Exception e) {

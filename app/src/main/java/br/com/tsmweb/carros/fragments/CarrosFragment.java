@@ -86,12 +86,9 @@ public class CarrosFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         carrosViewModal = ViewModelProviders.of(this).get(CarrosViewModal.class);
-
-        if (savedInstanceState == null) {
-            carrosViewModal.init();
-        }
-
+        getLifecycle().addObserver(carrosViewModal);
         binding.setViewModel(carrosViewModal);
+
         startViewModalObservable();
 
         if (savedInstanceState == null) {
@@ -134,8 +131,11 @@ public class CarrosFragment extends BaseFragment {
 
         // Observa e recebe o carro selecionado
         carrosViewModal.getSelected().observe(this, carro -> {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("carro", carro);
+
             Intent intent = new Intent(getContext(), CarroActivity.class);
-            intent.putExtra("carro", carro);
+            intent.putExtra("bundle", bundle);
             startActivity(intent);
         });
     }

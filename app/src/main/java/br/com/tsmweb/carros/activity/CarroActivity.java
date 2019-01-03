@@ -19,10 +19,12 @@ public class CarroActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         ActivityCarroBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_carro);
 
+        Bundle bundle = getIntent().getBundleExtra("bundle");
+        Carro carro = bundle.getParcelable("carro");
+
         // Configura a Toolbar como a action bar
         setUpToolbar();
-        // Título da Toolbar e botão up navigation
-        Carro carro = getIntent().getParcelableExtra("carro");
+        // Botão up navigation
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Configura o ViewModal
