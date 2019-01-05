@@ -59,7 +59,12 @@ public class CarroViewModal extends AndroidViewModel {
 
         // Salva as alterações no banco de dados
         CarroDB db = new CarroDB(getApplication().getApplicationContext());
-        db.save(carro);
+
+        try {
+            db.save(carro);
+        } finally {
+            db.close();
+        }
 
         updated.postValue(true);
     }
@@ -76,7 +81,12 @@ public class CarroViewModal extends AndroidViewModel {
     public void onCarroDelete() {
         // Deleta o carro
         CarroDB db = new CarroDB(getApplication().getApplicationContext());
-        db.delete(carro);
+
+        try {
+            db.delete(carro);
+        } finally {
+            db.close();
+        }
 
         deleted.postValue(true);
     }

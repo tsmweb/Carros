@@ -109,8 +109,9 @@ public class CarroService {
             // Salva todos os carros
             for (Carro carro : carros) {
                 carro.setTipo(tipoString);
-                Log.d(TAG, "Salvando o carro " + carro.getNome());
-                db.save(carro);
+                long id = db.save(carro);
+                carro.setId(id);
+                Log.d(TAG, "Salvando o carro " + carro.getId() + " - "+ carro.getNome());
             }
         } finally {
             db.close();

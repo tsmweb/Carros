@@ -99,7 +99,7 @@ public class DebugActivity extends AppCompatActivity {
     }
 
     protected boolean isLogLifecycle() {
-        return true;
+        return false;
     }
 
 }

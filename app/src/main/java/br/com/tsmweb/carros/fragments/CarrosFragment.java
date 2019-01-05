@@ -6,11 +6,14 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -21,6 +24,7 @@ import br.com.tsmweb.carros.CarrosApplication;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.activity.CarroActivity;
 import br.com.tsmweb.carros.databinding.FragmentCarrosBinding;
+import br.com.tsmweb.carros.domain.Carro;
 import br.com.tsmweb.carros.utils.AndroidUtils;
 import br.com.tsmweb.carros.viewModel.CarrosViewModal;
 
@@ -30,6 +34,7 @@ public class CarrosFragment extends BaseFragment {
     private FragmentCarrosBinding binding;
 
     private int tipo;
+    private ActionMode actionMode;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeLayout;
@@ -131,13 +136,116 @@ public class CarrosFragment extends BaseFragment {
 
         // Observa e recebe o carro selecionado
         carrosViewModal.getSelected().observe(this, carro -> {
+            openDetailsCarro(carro);
+        });
+
+        // Observa e recebe o carro selecionado pelo evento LongClick
+        carrosViewModal.getSelectedLong().observe(this, carro -> {
+            setupActionMode();
+        });
+
+        carrosViewModal.getDeleted().observe(this, isDeleted -> {
+            if (isDeleted) {
+                snack(recyclerView, R.string.carros_excluidos_sucesso);
+            }
+        });
+    }
+
+    // Abre tela de detalhes do carro selecionado
+    private void openDetailsCarro(Carro carro) {
+        if (actionMode == null) {
             Bundle bundle = new Bundle();
             bundle.putParcelable("carro", carro);
 
             Intent intent = new Intent(getContext(), CarroActivity.class);
             intent.putExtra("bundle", bundle);
             startActivity(intent);
-        });
+        } else { // Se a CAB está ativada
+            // Atualiza o título com a quantidade de carros selecionados
+            updateActionModeTitle();
+
+            // Redesenha a lista
+            if (recyclerView.getAdapter() != null) {
+                recyclerView.getAdapter().notifyDataSetChanged();
+            }
+        }
+    }
+
+    // Configura a Action Bar de Contexto (CAB)
+    private void setupActionMode() {
+        if (actionMode != null || carrosViewModal.getCountSelectedCarro() == 0) { return; }
+
+        // Liga a action bar de contexto (CAB)
+        actionMode = getAppCompatActivity().startSupportActionMode(getActionModeCallback());
+
+        // Solicita ao Android para desenhar a lista novamente
+        if (recyclerView.getAdapter() != null) {
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+
+        // Atualiza o título para mostrar a quantidade de carros selecionados.
+        updateActionModeTitle();
+    }
+
+    // Atualiza o título da action bar (CAB)
+    private void updateActionModeTitle() {
+        if (actionMode != null) {
+            actionMode.setTitle(R.string.selecione_carros);
+            actionMode.setSubtitle(null);
+        }
+
+        int countSelected = carrosViewModal.getCountSelectedCarro();
+
+        if (countSelected == 1) {
+            actionMode.setSubtitle(R.string.carro_selecionado);
+        } else if (countSelected > 1) {
+            actionMode.setSubtitle(getString(R.string.carros_selecionados, countSelected));
+        }
+    }
+
+    private ActionMode.Callback getActionModeCallback() {
+        return new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                // Infla o menu específico da action bar de contexto (CAB)
+                MenuInflater inflater = getActivity().getMenuInflater();
+                inflater.inflate(R.menu.menu_frag_carros_cab, menu);
+
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem item) {
+                if (item.getItemId() == R.id.action_remove) {
+                    carrosViewModal.deleteSelectedCarros();
+                } else if (item.getItemId() == R.id.action_share) {
+                    toast("Compartilhar");
+                }
+
+                // Encerra o action mode
+                actionMode.finish();
+
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                // Limpa o estado
+                actionMode = null;
+
+                // Configura todos os carros para não selecionados
+                carrosViewModal.deselectCarros();
+
+                if (recyclerView.getAdapter() != null) {
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                }
+            }
+        };
     }
 
     @Override

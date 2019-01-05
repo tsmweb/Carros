@@ -25,7 +25,8 @@
         card_view:cardElevation="6dp"
         android:foreground="?attr/selectableItemBackground"
         android:clickable="true"
-        android:onClick="@{() -> viewModel.onCarroItemClick(carro)}">
+        android:onClick="@{() -> viewModel.onCarroItemClick(carro)}"
+        android:onLongClick="@{() -> viewModel.onCarroItemLongClick(carro)}">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -33,7 +34,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/text"
+                android:id="@+id/txt_nome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
@@ -47,7 +48,7 @@
 
                 <!-- Foto do Carro -->
                 <ImageView
-                    android:id="@+id/img"
+                    android:id="@+id/img_foto"
                     android:layout_width="@dimen/img_carro_adapter_width"
                     android:layout_height="@dimen/img_carro_adapter_height"
                     android:layout_gravity="center_horizontal"

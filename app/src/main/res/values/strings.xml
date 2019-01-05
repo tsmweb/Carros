@@ -24,6 +24,8 @@ Versao %s<br><br>
     <string name="confirmar">Confirmar</string>
     <string name="carro_atualizado">Carro atualizado</string>
     <string name="carro_deletado">Carro deletado.</string>
+    <string name="carro_selecionado">1 carro selecionado</string>
+    <string name="carros_selecionados">%d carros selecionados</string>
 
     <!-- D -->
     <string name="descricao">Descrição</string>
@@ -68,6 +70,7 @@ Versao %s<br><br>
     <string name="site_do_livro">Site do Livro</string>
     <string name="share">Share</string>
     <string name="sim">Sim</string>
+    <string name="selecione_carros">Selecione os carros</string>
 
     <!-- T -->
     <string name="todos">Todos</string>
@@ -78,5 +81,6 @@ Versao %s<br><br>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="carros_excluidos_sucesso">Carros excluídos com sucesso.</string>
 
 </resources>

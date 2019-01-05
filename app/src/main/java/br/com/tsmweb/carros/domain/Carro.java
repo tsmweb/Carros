@@ -16,6 +16,7 @@ public class Carro implements Parcelable {
     private String urlVideo;
     private String latitude;
     private String longitude;
+    public boolean selected; // Flag para indicar que o carro está selecionado
 
     public long getId() {
         return id;

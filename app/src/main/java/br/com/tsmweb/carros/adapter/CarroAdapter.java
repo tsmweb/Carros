@@ -1,5 +1,6 @@
 package br.com.tsmweb.carros.adapter;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -21,10 +22,12 @@ public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHo
     private LayoutInflater inflater;
     private List<Carro> carros;
     private CarrosViewModal viewModal;
+    private Context context;
 
     public CarroAdapter(CarrosViewModal viewModal) {
         this.viewModal = viewModal;
         this.carros = new ArrayList<>();
+        this.context = viewModal.getApplication().getApplicationContext();
     }
 
     @NonNull
@@ -43,8 +46,18 @@ public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final CarrosViewHolder holder, final int position) {
+        Carro carro = carros.get(position);
+
         // Atualiza a view
-        holder.bind(viewModal, carros.get(position));
+        holder.bind(viewModal, carro);
+
+        // Pinta o fundo de azul se a linha estiver selecionada
+        int corFundo = context.getResources().getColor(carro.selected ? R.color.primary : R.color.white);
+        holder.binding.cardView.setBackgroundColor(corFundo);
+
+        // A cor do texto é branca ou azul, depende da cor do fundo.
+        int corFonte = context.getResources().getColor(carro.selected ? R.color.white : R.color.dark_gray);
+        holder.binding.txtNome.setTextColor(corFonte);
     }
 
     @Override
