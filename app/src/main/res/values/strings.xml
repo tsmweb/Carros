@@ -15,6 +15,7 @@ Versao %s<br><br>
 	</string>
     <string name="open_drawer">Abrir Menu</string>
     <string name="atualizar">Atualizar</string>
+    <string name="aguarde">Aguarde</string>
 
     <!-- C -->
     <string name="carros">Carros</string>
@@ -26,6 +27,7 @@ Versao %s<br><br>
     <string name="carro_deletado">Carro deletado.</string>
     <string name="carro_selecionado">1 carro selecionado</string>
     <string name="carros_selecionados">%d carros selecionados</string>
+    <string name="carros_excluidos_sucesso">Carros excluídos com sucesso.</string>
 
     <!-- D -->
     <string name="descricao">Descrição</string>
@@ -64,6 +66,7 @@ Versao %s<br><br>
 
     <!-- P -->
     <string name="permissoes_negadas">Permissões Negadas</string>
+    <string name="preparando_carros">Preparando carros</string>
 
     <!-- S -->
     <string name="sobre">Sobre</string>
@@ -81,6 +84,6 @@ Versao %s<br><br>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="carros_excluidos_sucesso">Carros excluídos com sucesso.</string>
+    <string name="enviar_carros">Enviar Carros</string>
 
 </resources>

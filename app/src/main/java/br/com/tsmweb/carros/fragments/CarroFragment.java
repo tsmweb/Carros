@@ -38,6 +38,7 @@ public class CarroFragment extends BaseFragment {
 
         carroViewModal = ViewModelProviders.of(getActivity()).get(CarroViewModal.class);
         binding.setViewModal(carroViewModal);
+        binding.executePendingBindings();
 
         startViewModalObservable();
     }

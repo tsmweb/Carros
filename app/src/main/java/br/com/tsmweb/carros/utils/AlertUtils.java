@@ -3,7 +3,11 @@ package br.com.tsmweb.carros.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.support.v7.app.AlertDialog;
+import android.util.TypedValue;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 public class AlertUtils {
 
@@ -51,6 +55,39 @@ public class AlertUtils {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public static AlertDialog progress(Context context, String title, String message) {
+        final ProgressBar progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
+        progressBar.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        progressBar.setIndeterminate(true);
+
+        final LinearLayout container = new LinearLayout(context);
+        container.addView(progressBar);
+
+        int padding = getDialogPadding(context);
+
+        container.setPadding(padding, (message == null ? padding : 0), padding, 0);
+
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(context)
+                        .setTitle(title)
+                        .setMessage(message)
+                        .setView(container);
+
+        return builder.create();
+    }
+
+    private static int getDialogPadding(Context context) {
+        int[] sizeAttr = new int[] { android.support.v7.appcompat.R.attr.dialogPreferredPadding };
+        TypedArray a = context.obtainStyledAttributes((new TypedValue()).data, sizeAttr);
+        int size = a.getDimensionPixelSize(0, -1);
+        a.recycle();
+
+        return size;
     }
 
 }

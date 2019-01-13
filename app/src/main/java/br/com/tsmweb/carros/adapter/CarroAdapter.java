@@ -5,7 +5,11 @@ import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +21,7 @@ import br.com.tsmweb.carros.viewModel.CarrosViewModal;
 
 public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHolder> {
 
-    protected final String TAG = this.getClass().getSimpleName();
+    private static final String TAG = CarroAdapter.class.getSimpleName();
 
     private LayoutInflater inflater;
     private List<Carro> carros;
@@ -51,11 +55,28 @@ public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHo
         // Atualiza a view
         holder.bind(viewModal, carro);
 
+        holder.binding.progressImg.setVisibility(View.VISIBLE);
+
+        Picasso.get()
+                .load(carro.getUrlFoto())
+                .fit()
+                .into(holder.binding.imgFoto, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        holder.binding.progressImg.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                       // holder.binding.progressImg.setVisibility(View.GONE);
+                    }
+                });
+
         // Pinta o fundo de azul se a linha estiver selecionada
         int corFundo = context.getResources().getColor(carro.selected ? R.color.primary : R.color.white);
         holder.binding.cardView.setBackgroundColor(corFundo);
 
-        // A cor do texto é branca ou azul, depende da cor do fundo.
+        // A cor do texto é dark gray ou branca, depende da cor do fundo.
         int corFonte = context.getResources().getColor(carro.selected ? R.color.white : R.color.dark_gray);
         holder.binding.txtNome.setTextColor(corFonte);
     }

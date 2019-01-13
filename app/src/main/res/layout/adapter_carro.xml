@@ -52,8 +52,19 @@
                     android:layout_width="@dimen/img_carro_adapter_width"
                     android:layout_height="@dimen/img_carro_adapter_height"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="6dp"
-                    android:src="@{carro.urlFoto}"/>
+                    android:layout_marginTop="6dp" />
+                    <!-- android:src="@{carro.urlFoto}"/> -->
+
+                <!-- Barra de progresso enquanto carrega a foto -->
+                <ProgressBar
+                    android:id="@+id/progress_img"
+                    style="@android:style/Widget.ProgressBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|center_vertical"
+                    android:layout_marginRight="6dp"
+                    android:gravity="center|center_vertical"
+                    android:visibility="invisible" />
 
             </FrameLayout>
 
