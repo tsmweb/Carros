@@ -20,11 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.squareup.otto.Subscribe;
-
 import java.util.ArrayList;
 
-import br.com.tsmweb.carros.CarrosApplication;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.activity.CarroActivity;
 import br.com.tsmweb.carros.databinding.FragmentCarrosBinding;
@@ -66,9 +63,6 @@ public class CarrosFragment extends BaseFragment {
             // Lê o tipo dos argumentos
             this.tipo = getArguments().getInt("tipo");
         }
-
-        // Registra a classe para receber eventos
-        CarrosApplication.getInstance().getBus().register(this);
     }
 
     @Override
@@ -115,8 +109,7 @@ public class CarrosFragment extends BaseFragment {
             // Atualiza ao fazer o gesto Pull to Refresh
             // Valida se existe conexão ao fazer o gesto Pull to Refresh
             if (AndroidUtils.isNetworkAvailable(getContext())) {
-                carrosViewModal.setPullToRefresh(true);
-                carrosViewModal.loadCarros(tipo);
+                carrosViewModal.downloadCarros(tipo);
             } else {
                 swipeLayout.setRefreshing(false);
                 snack(recyclerView, R.string.msg_error_conexao_indisponivel);
@@ -125,22 +118,18 @@ public class CarrosFragment extends BaseFragment {
     }
 
     private void startViewModalObservable() {
-        // Observa o carregamento das informações do web service
+        // Observa o carregamento das informações da base de dados
         carrosViewModal.getLoading().observe(this, isLoading -> {
-            if (carrosViewModal.getPullToRefresh()) {
-                if (!isLoading) {
-                    swipeLayout.setRefreshing(false);
-                    carrosViewModal.setPullToRefresh(false);
-                } else {
-                    swipeLayout.setRefreshing(true);
-                }
+            if (isLoading) {
+                progressBar.setVisibility(View.VISIBLE);
             } else {
-                if (isLoading) {
-                    progressBar.setVisibility(View.VISIBLE);
-                } else {
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
+                progressBar.setVisibility(View.INVISIBLE);
             }
+        });
+
+        // Observa o carregamento das informações do web service
+        carrosViewModal.getPullToRefresh().observe(this, isRefreshing -> {
+            swipeLayout.setRefreshing(isRefreshing);
         });
 
         // Observa e recebe o carro selecionado pelo evento Click
@@ -184,6 +173,13 @@ public class CarrosFragment extends BaseFragment {
                 if (alertProgress != null) {
                     alertProgress.dismiss();
                 }
+            }
+        });
+
+        // Observa o erro gerado nas operações com os carros
+        carrosViewModal.getError().observe(this, isError -> {
+            if (isError) {
+                snack(recyclerView, "Falha na operação!");
             }
         });
     }
@@ -293,17 +289,4 @@ public class CarrosFragment extends BaseFragment {
         };
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        // Cancela o recebimento de eventos
-        CarrosApplication.getInstance().getBus().unregister(this);
-    }
-
-    @Subscribe
-    public void onBusAtualizarListaCarros(String refresh) {
-        // Recebeu o evento, atualiza a lista
-        carrosViewModal.loadCarros(tipo);
-    }
 }

@@ -8,11 +8,17 @@ import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 
 import br.com.tsmweb.carros.domain.Carro;
-import br.com.tsmweb.carros.domain.CarroDB;
+import br.com.tsmweb.carros.domain.repository.ICarroRepository;
+import br.com.tsmweb.carros.domain.repository.RepositoryLocator;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class CarroViewModal extends AndroidViewModel {
 
     private static final String TAG = CarroViewModal.class.getSimpleName();
+
+    private ICarroRepository carroRepository;
 
     public ObservableField<String> nome = new ObservableField<>();
     public ObservableField<String> descricao = new ObservableField<>();
@@ -26,6 +32,12 @@ public class CarroViewModal extends AndroidViewModel {
 
     public CarroViewModal(@NonNull Application application) {
         super(application);
+
+        try {
+            carroRepository = RepositoryLocator.getInstance(getApplication().getApplicationContext()).locate(ICarroRepository.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setCarro(Carro carro) {
@@ -58,15 +70,13 @@ public class CarroViewModal extends AndroidViewModel {
         carro.setNome(nome.get());
 
         // Salva as alterações no banco de dados
-        CarroDB db = new CarroDB(getApplication().getApplicationContext());
-
-        try {
-            db.save(carro);
-        } finally {
-            db.close();
-        }
-
-        updated.postValue(true);
+        Disposable d = carroRepository.update(carro)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    ret -> updated.postValue(true),
+                    err -> error.postValue(true)
+                );
     }
 
     // Valida os valores informados pelo usuário
@@ -80,15 +90,13 @@ public class CarroViewModal extends AndroidViewModel {
 
     public void onCarroDelete() {
         // Deleta o carro
-        CarroDB db = new CarroDB(getApplication().getApplicationContext());
-
-        try {
-            db.delete(carro);
-        } finally {
-            db.close();
-        }
-
-        deleted.postValue(true);
+        Disposable d = carroRepository.delete(carro)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    ret -> deleted.postValue(true),
+                    err ->  error.postValue(true)
+                );
     }
 
 }

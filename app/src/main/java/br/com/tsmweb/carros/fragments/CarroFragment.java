@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import br.com.tsmweb.carros.CarrosApplication;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.FragmentCarroBinding;
 import br.com.tsmweb.carros.fragments.dialog.DeletarCarroDialog;
@@ -47,16 +46,11 @@ public class CarroFragment extends BaseFragment {
         carroViewModal.getUpdated().observe(this, isUpdated -> {
             if (isUpdated) {
                 toast(R.string.carro_atualizado);
-                // Envia o evento para o bus
-                CarrosApplication.getInstance().getBus().post("refresh");
             }
         });
 
         carroViewModal.getDeleted().observe(this, isDeleted -> {
             if (isDeleted) {
-                // Envia o evento para o bus
-                CarrosApplication.getInstance().getBus().post("refresh");
-
                 // Fecha a activity
                 getActivity().finish();
             }
