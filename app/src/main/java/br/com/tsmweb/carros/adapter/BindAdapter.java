@@ -1,12 +1,10 @@
 package br.com.tsmweb.carros.adapter;
 
-import android.databinding.BindingAdapter;
+import androidx.databinding.BindingAdapter;
 import android.net.Uri;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-
-import br.com.tsmweb.carros.R;
 
 
 public class BindAdapter {

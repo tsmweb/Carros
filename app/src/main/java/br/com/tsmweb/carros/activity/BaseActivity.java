@@ -2,9 +2,9 @@ package br.com.tsmweb.carros.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;

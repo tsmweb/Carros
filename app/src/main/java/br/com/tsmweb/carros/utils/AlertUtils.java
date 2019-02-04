@@ -2,9 +2,8 @@ package br.com.tsmweb.carros.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.TypedArray;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.util.TypedValue;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -82,7 +81,7 @@ public class AlertUtils {
     }
 
     private static int getDialogPadding(Context context) {
-        int[] sizeAttr = new int[] { android.support.v7.appcompat.R.attr.dialogPreferredPadding };
+        int[] sizeAttr = new int[] { androidx.appcompat.R.attr.dialogPreferredPadding };
         TypedArray a = context.obtainStyledAttributes((new TypedValue()).data, sizeAttr);
         int size = a.getDimensionPixelSize(0, -1);
         a.recycle();

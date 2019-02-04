@@ -4,7 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.utils.AlertUtils;

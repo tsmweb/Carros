@@ -1,11 +1,11 @@
 package br.com.tsmweb.carros.viewModel;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
 
 import br.com.tsmweb.carros.domain.Carro;
 import br.com.tsmweb.carros.domain.repository.ICarroRepository;

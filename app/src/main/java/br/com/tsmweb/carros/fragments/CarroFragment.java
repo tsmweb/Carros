@@ -1,9 +1,9 @@
 package br.com.tsmweb.carros.fragments;
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,7 +30,6 @@ public class CarroFragment extends BaseFragment {
 
         carroViewModal = ViewModelProviders.of(getActivity()).get(CarroViewModal.class);
         binding.setViewModal(carroViewModal);
-        binding.executePendingBindings();
 
         return view;
     }

@@ -1,8 +1,8 @@
 package br.com.tsmweb.carros.fragments;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -80,7 +80,7 @@ public class BaseFragment extends DebugFragment {
         Log.d(TAG, msg);
     }
 
-    public android.support.v7.app.ActionBar getActionBar() {
+    public androidx.appcompat.app.ActionBar getActionBar() {
         AppCompatActivity ac = getAppCompatActivity();
         return ac.getSupportActionBar();
     }

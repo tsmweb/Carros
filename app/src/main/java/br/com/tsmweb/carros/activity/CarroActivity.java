@@ -1,7 +1,7 @@
 package br.com.tsmweb.carros.activity;
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 
 import br.com.tsmweb.carros.R;
