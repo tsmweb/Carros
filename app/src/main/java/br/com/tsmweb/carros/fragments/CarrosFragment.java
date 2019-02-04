@@ -70,7 +70,7 @@ public class CarrosFragment extends BaseFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_carros, container, false);
         View view = binding.getRoot();
 
-        recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView = binding.recyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(true);
@@ -78,12 +78,18 @@ public class CarrosFragment extends BaseFragment {
         progressBar = view.findViewById(R.id.progress);
 
         // Swipe to Refresh
-        swipeLayout = view.findViewById(R.id.swipeToRefresh);
+        swipeLayout = binding.swipeToRefresh;
         swipeLayout.setOnRefreshListener(OnRefreshListener());
         swipeLayout.setColorSchemeResources(
                 R.color.refresh_progress_1,
                 R.color.refresh_progress_2,
                 R.color.refresh_progress_3);
+
+        carrosViewModal = ViewModelProviders.of(this).get(CarrosViewModal.class);
+        getLifecycle().addObserver(carrosViewModal);
+
+        binding.setViewModel(carrosViewModal);
+        binding.executePendingBindings();
 
         return view;
     }
@@ -91,11 +97,6 @@ public class CarrosFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        carrosViewModal = ViewModelProviders.of(this).get(CarrosViewModal.class);
-        getLifecycle().addObserver(carrosViewModal);
-        binding.setViewModel(carrosViewModal);
-        binding.executePendingBindings();
 
         startViewModalObservable();
 
@@ -149,7 +150,9 @@ public class CarrosFragment extends BaseFragment {
 
         // Observa e recebe o carro selecionado pelo evento LongClick
         carrosViewModal.getSelectedLong().observe(this, carro -> {
-            setupActionMode();
+            if (carro != null) {
+                setupActionMode();
+            }
         });
 
         // Observa quando um ou mais carros forem deletados
@@ -287,6 +290,13 @@ public class CarrosFragment extends BaseFragment {
                 }
             }
         };
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        getLifecycle().removeObserver(carrosViewModal);
     }
 
 }

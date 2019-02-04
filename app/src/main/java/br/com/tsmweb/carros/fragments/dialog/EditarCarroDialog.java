@@ -59,15 +59,15 @@ public class EditarCarroDialog extends DialogFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_editar_carro, container, false);
         View rootView = binding.getRoot();
 
+        carroViewModal = ViewModelProviders.of(getActivity()).get(CarroViewModal.class);
+        binding.setViewModal(carroViewModal);
+
         return rootView;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        carroViewModal = ViewModelProviders.of(getActivity()).get(CarroViewModal.class);
-        binding.setViewModal(carroViewModal);
 
         startViewModalObservable();
     }

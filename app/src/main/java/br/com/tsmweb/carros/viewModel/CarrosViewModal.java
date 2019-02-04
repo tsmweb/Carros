@@ -24,7 +24,7 @@ import br.com.tsmweb.carros.utils.IOUtils;
 import br.com.tsmweb.carros.utils.SDCardUtils;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class CarrosViewModal extends AndroidViewModel implements LifecycleObserver {
@@ -44,10 +44,13 @@ public class CarrosViewModal extends AndroidViewModel implements LifecycleObserv
     private MutableLiveData<Boolean> pullToRefresh = new MutableLiveData<>();
     private int countSelectedCarro = 0;
 
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+
     public CarrosViewModal(@NonNull Application application) {
         super(application);
 
         try {
+            // Obtém uma instância de ICarroRepository para manipular os dados dos carros
             carroRepository = RepositoryLocator.getInstance(getApplication().getApplicationContext()).locate(ICarroRepository.class);
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,7 +58,7 @@ public class CarrosViewModal extends AndroidViewModel implements LifecycleObserv
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    private void reset() {
+    private void onCreate() {
         selected = new MutableLiveData<>();
         deleted = new MutableLiveData<>();
         imageUris = new MutableLiveData<>();
@@ -102,6 +105,7 @@ public class CarrosViewModal extends AndroidViewModel implements LifecycleObserv
         return countSelectedCarro;
     }
 
+    // Seleciona um carro com o evento de click
     public void onCarroItemClick(Carro carro) {
         if (countSelectedCarro > 0) {
             carro.selected = !carro.selected;
@@ -116,6 +120,7 @@ public class CarrosViewModal extends AndroidViewModel implements LifecycleObserv
         selected.postValue(carro);
     }
 
+    // Seleciona um carro com o evento de click longo
     public boolean onCarroItemLongClick(Carro carro) {
         deselectCarros();
         carro.selected = !carro.selected;
@@ -131,10 +136,11 @@ public class CarrosViewModal extends AndroidViewModel implements LifecycleObserv
         return true;
     }
 
+    // Carrega os carros da base de dados
     public void loadCarros(int tipo) {
         loading.postValue(true);
 
-        Disposable d = carroRepository.getCarrosByTipo(tipo)
+        mCompositeDisposable.add(carroRepository.getCarrosByTipo(tipo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         carros -> {
@@ -148,25 +154,30 @@ public class CarrosViewModal extends AndroidViewModel implements LifecycleObserv
                             loading.postValue(false);
                             error.postValue(true);
                             Log.d(TAG, err.getMessage(), err);
-                        });
+                        })
+        );
     }
 
+    // Obtém os carros de um web-services e armazena na base de dados
     public void downloadCarros(int tipo) {
         pullToRefresh.postValue(true);
 
-        Disposable d = carroRepository.downloadCarrosFromAPI(tipo)
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(carroRepository.downloadCarrosFromAPI(tipo)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doAfterTerminate(() -> compositeDisposable.clear())
                 .subscribe(
                         () -> {
                             pullToRefresh.postValue(false);
-                            Log.d(TAG, "Download dos carros do Web Services!");
+                            Log.d(TAG, "Download-Carros : Download dos carros do Web Services!");
                         },
                         err -> {
                             pullToRefresh.postValue(false);
                             error.postValue(true);
                             Log.d(TAG, err.getMessage(), err);
-                        });
+                        })
+        );
     }
 
     // Retorna a lista de carros selecionados
@@ -199,9 +210,14 @@ public class CarrosViewModal extends AndroidViewModel implements LifecycleObserv
     public void deleteSelectedCarros() {
         List<Carro> selectedCarros = getSelectedCarros();
 
-        Disposable d = carroRepository.delete(selectedCarros)
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(carroRepository.delete(selectedCarros)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doAfterTerminate(() -> {
+                    selectedLong.postValue(null);
+                    compositeDisposable.clear();
+                })
                 .subscribe(
                         ret -> {
                             adapter.getCarros().removeAll(selectedCarros);
@@ -210,14 +226,16 @@ public class CarrosViewModal extends AndroidViewModel implements LifecycleObserv
                         err -> {
                             error.postValue(true);
                             Log.d(TAG, err.getMessage(), err);
-                        });
+                        })
+        );
     }
 
     // Compartilha os carros selecionados
     public void shareSelectedCarros() {
         List<Carro> selectedCarros = getSelectedCarros();
 
-        Observable.fromCallable(
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(Observable.fromCallable(
                 () -> {
                     ArrayList<Uri> listUri = new ArrayList<>();
 
@@ -240,6 +258,7 @@ public class CarrosViewModal extends AndroidViewModel implements LifecycleObserv
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doAfterTerminate(() -> compositeDisposable.clear())
                 .subscribe(
                         uris -> {
                             if (uris != null && uris.size() > 0) {
@@ -247,12 +266,21 @@ public class CarrosViewModal extends AndroidViewModel implements LifecycleObserv
                             }
                         },
                         err -> {
+                            downloadingImage.postValue(false);
                             error.postValue(true);
                             Log.d(TAG, err.getMessage(), err);
                         },
                         () -> downloadingImage.postValue(false),
-                        disposable -> downloadingImage.postValue(true)
-                );
+                        subscriber -> downloadingImage.postValue(true)
+                )
+        );
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+
+        Log.d(TAG, "onCleared()");
+        mCompositeDisposable.clear();
+    }
 }

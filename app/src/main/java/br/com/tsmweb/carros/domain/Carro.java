@@ -7,11 +7,15 @@ import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 @Entity(tableName = "carro")
 public class Carro implements Parcelable {
 
     private static final long serialVersionUID = 6601006766832473959L;
 
+    @Expose
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "_id")
     private long id;
@@ -22,12 +26,15 @@ public class Carro implements Parcelable {
 
     private String desc;
 
+    @SerializedName("url_foto")
     @ColumnInfo(name = "url_foto")
     private String urlFoto;
 
+    @SerializedName("url_info")
     @ColumnInfo(name = "url_info")
     private String urlInfo;
 
+    @SerializedName("url_video")
     @ColumnInfo(name = "url_video")
     private String urlVideo;
 
@@ -35,6 +42,7 @@ public class Carro implements Parcelable {
 
     private String longitude;
 
+    @Expose
     @Ignore
     public boolean selected; // Flag para indicar que o carro está selecionado
 

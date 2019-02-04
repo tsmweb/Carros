@@ -129,7 +129,7 @@ public class DebugFragment extends Fragment {
     }
 
     protected boolean isLogLifecycle() {
-        return false;
+        return true;
     }
 
 }

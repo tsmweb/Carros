@@ -11,7 +11,7 @@ import br.com.tsmweb.carros.domain.Carro;
 import br.com.tsmweb.carros.domain.repository.ICarroRepository;
 import br.com.tsmweb.carros.domain.repository.RepositoryLocator;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class CarroViewModal extends AndroidViewModel {
@@ -70,13 +70,20 @@ public class CarroViewModal extends AndroidViewModel {
         carro.setNome(nome.get());
 
         // Salva as alterações no banco de dados
-        Disposable d = carroRepository.update(carro)
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(carroRepository.update(carro)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doAfterTerminate(() -> compositeDisposable.clear())
                 .subscribe(
-                    ret -> updated.postValue(true),
-                    err -> error.postValue(true)
-                );
+                    ret -> {
+                        updated.postValue(true);
+                    },
+                    err -> {
+                        error.postValue(true);
+                    }
+                )
+        );
     }
 
     // Valida os valores informados pelo usuário
@@ -90,13 +97,20 @@ public class CarroViewModal extends AndroidViewModel {
 
     public void onCarroDelete() {
         // Deleta o carro
-        Disposable d = carroRepository.delete(carro)
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(carroRepository.delete(carro)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doAfterTerminate(() -> compositeDisposable.clear())
                 .subscribe(
-                    ret -> deleted.postValue(true),
-                    err ->  error.postValue(true)
-                );
+                    ret -> {
+                        deleted.postValue(true);
+                    },
+                    err ->  {
+                        error.postValue(true);
+                    }
+                )
+        );
     }
 
 }

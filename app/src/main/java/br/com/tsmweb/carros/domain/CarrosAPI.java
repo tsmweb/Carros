@@ -22,6 +22,7 @@ import br.com.tsmweb.carros.utils.HttpHelper;
 import br.com.tsmweb.carros.utils.IOUtils;
 import br.com.tsmweb.carros.utils.SDCardUtils;
 
+@Deprecated
 public class CarrosAPI {
 
     private static final String TAG = CarrosAPI.class.getSimpleName();

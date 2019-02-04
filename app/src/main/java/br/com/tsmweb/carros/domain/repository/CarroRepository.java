@@ -2,25 +2,25 @@ package br.com.tsmweb.carros.domain.repository;
 
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 import br.com.tsmweb.carros.R;
+import br.com.tsmweb.carros.api.CarrosApi;
 import br.com.tsmweb.carros.domain.Carro;
-import br.com.tsmweb.carros.domain.CarrosAPI;
 import br.com.tsmweb.carros.domain.dao.CarroDAO;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
-import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class CarroRepository implements ICarroRepository {
 
     private static final String TAG = CarroRepository.class.getSimpleName();
 
     private final CarroDAO carroDAO;
+    private boolean isDownloading;
 
     public CarroRepository(CarroDAO carroDAO) {
         this.carroDAO = carroDAO;
@@ -67,8 +67,11 @@ public class CarroRepository implements ICarroRepository {
 
         return getCarrosFromBanco(tipo)
                 .doOnNext(carros -> {
-                    if (carros.isEmpty()) {
-                        downloadCarrosFromAPI(tipo).subscribe();
+                    if (carros.isEmpty() && !isDownloading) {
+                        CompositeDisposable compositeDisposable = new CompositeDisposable();
+                        downloadCarrosFromAPI(tipo)
+                                .doAfterTerminate(() -> compositeDisposable.clear())
+                                .subscribe();
                     }
                 });
     }
@@ -81,24 +84,26 @@ public class CarroRepository implements ICarroRepository {
     public Completable downloadCarrosFromAPI(int tipo) {
         String tipoStr = getTipo(tipo);
 
-        return Completable.create(emitter -> {
-               try {
-                   List<Carro> carros = CarrosAPI.getCarrosFromWebService(tipo);
-                   carroDAO.deleteCarrosByTipo(tipoStr);
+        return Completable.fromCallable(() ->
+            new CarrosApi().getCarrosService()
+                    .getCarrosByTipo(tipoStr)
+                    .map(carrosResult -> carrosResult.carros.listCarro)
+                    .subscribe(
+                            carros -> {
+                                isDownloading = true;
+                                carroDAO.deleteCarrosByTipo(tipoStr);
 
-                   Observable.fromIterable(carros)
-                           .subscribe(carro -> {
-                               carro.setTipo(tipoStr);
-                               long id = carroDAO.save(carro);
-                               carro.setId(id);
-                               Log.d(TAG, "Salvando o carro " + carro.getId() + " - "+ carro.getNome());
-                            });
+                                for (Carro carro : carros) {
+                                    carro.setTipo(tipoStr);
+                                    long id = carroDAO.save(carro);
+                                    carro.setId(id);
+                                    Log.d(TAG, "Salvando o carro " + carro.getId() + " - " + carro.getNome());
+                                }
 
-                   emitter.onComplete();
-               } catch (IOException ex) {
-                   emitter.onError(new Throwable(ex));
-               }
-        });
+                                isDownloading = false;
+                            }
+                    )
+        );
     }
 
     // Converte a constante para string, para criar a URL do web service.

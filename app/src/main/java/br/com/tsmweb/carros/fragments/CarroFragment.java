@@ -28,16 +28,16 @@ public class CarroFragment extends BaseFragment {
         View view = binding.getRoot();
         setHasOptionsMenu(true);
 
+        carroViewModal = ViewModelProviders.of(getActivity()).get(CarroViewModal.class);
+        binding.setViewModal(carroViewModal);
+        binding.executePendingBindings();
+
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        carroViewModal = ViewModelProviders.of(getActivity()).get(CarroViewModal.class);
-        binding.setViewModal(carroViewModal);
-        binding.executePendingBindings();
 
         startViewModalObservable();
     }
