@@ -5,13 +5,13 @@
     <data>
         <variable
             name="viewModel"
-            type="br.com.tsmweb.carros.viewModel.CarrosViewModal" />
+            type="br.com.tsmweb.carros.view.viewModel.CarrosViewModel" />
     </data>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragments.CarrosFragment">
+        tools:context=".view.fragments.CarrosFragment">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeToRefresh"

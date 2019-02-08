@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
 
-        <activity android:name=".activity.SplashActivity">
+        <activity android:name=".view.activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,38 +24,38 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".view.activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar.NavDrawer"
             android:launchMode="singleTop" />
         <activity
-            android:name=".activity.CarroActivity"
-            android:parentActivityName=".activity.MainActivity">
+            android:name=".view.activity.CarroActivity"
+            android:parentActivityName=".view.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".view.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".activity.CarrosActivity"
-            android:parentActivityName=".activity.MainActivity">
+            android:name=".view.activity.CarrosActivity"
+            android:parentActivityName=".view.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".view.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".activity.SiteLivroActivity"
-            android:parentActivityName=".activity.MainActivity">
+            android:name=".view.activity.SiteLivroActivity"
+            android:parentActivityName=".view.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".view.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".activity.ConfiguracoesActivity"
+            android:name=".view.activity.ConfiguracoesActivity"
             android:label="@string/configuracoes"
-            android:parentActivityName=".activity.MainActivity"
+            android:parentActivityName=".view.activity.MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".view.activity.MainActivity" />
         </activity>
 
         <!-- Chave do backup service do Google -->

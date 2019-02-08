@@ -5,11 +5,11 @@
     <data>
         <variable
             name="carro"
-            type="br.com.tsmweb.carros.domain.Carro" />
+            type="br.com.tsmweb.carros.data.Carro" />
 
         <variable
             name="viewModel"
-            type="br.com.tsmweb.carros.viewModel.CarrosViewModal" />
+            type="br.com.tsmweb.carros.view.viewModel.CarrosViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView

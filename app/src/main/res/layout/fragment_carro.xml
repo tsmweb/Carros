@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModal"
-            type="br.com.tsmweb.carros.viewModel.CarroViewModal" />
+            type="br.com.tsmweb.carros.view.viewModel.CarroViewModel" />
     </data>
 
     <LinearLayout
