@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="br.com.tsmweb.carros.view.viewModel.NavHeaderViewModel"/>
+            type="br.com.tsmweb.carros.presentation.viewModel.NavHeaderViewModel"/>
     </data>
 
     <RelativeLayout

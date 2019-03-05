@@ -1,4 +1,4 @@
-package br.com.tsmweb.carros.data;
+package br.com.tsmweb.carros.data_remote.model;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -12,7 +12,7 @@ public class CarrosResponse {
     public class CarroResult {
 
         @SerializedName("carro")
-        public List<Carro> listCarro;
+        public List<CarroEntity> listCarro;
 
     }
 }

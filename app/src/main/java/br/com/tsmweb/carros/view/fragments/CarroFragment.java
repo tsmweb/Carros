@@ -15,7 +15,7 @@ import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.FragmentCarroBinding;
 import br.com.tsmweb.carros.view.fragments.dialog.DeletarCarroDialog;
 import br.com.tsmweb.carros.view.fragments.dialog.EditarCarroDialog;
-import br.com.tsmweb.carros.view.viewModel.CarroViewModel;
+import br.com.tsmweb.carros.presentation.viewModel.CarroViewModel;
 
 public class CarroFragment extends BaseFragment {
 

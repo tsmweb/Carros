@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="br.com.tsmweb.carros.view.viewModel.CarrosViewModel" />
+            type="br.com.tsmweb.carros.presentation.viewModel.CarrosViewModel" />
     </data>
 
     <FrameLayout

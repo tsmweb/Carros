@@ -1,6 +1,6 @@
-package br.com.tsmweb.carros.data.api;
+package br.com.tsmweb.carros.data_remote.service;
 
-import br.com.tsmweb.carros.data.CarrosResponse;
+import br.com.tsmweb.carros.data_remote.model.CarrosResponse;
 import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Path;

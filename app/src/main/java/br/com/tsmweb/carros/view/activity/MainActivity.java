@@ -23,7 +23,7 @@ import br.com.tsmweb.carros.databinding.NavDrawerHeaderBinding;
 import br.com.tsmweb.carros.view.fragments.dialog.AboutDialog;
 import br.com.tsmweb.carros.utils.ImageUtils;
 import br.com.tsmweb.carros.utils.Prefs;
-import br.com.tsmweb.carros.view.viewModel.NavHeaderViewModel;
+import br.com.tsmweb.carros.presentation.viewModel.NavHeaderViewModel;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 

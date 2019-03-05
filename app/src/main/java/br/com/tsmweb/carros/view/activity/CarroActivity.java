@@ -6,9 +6,9 @@ import android.os.Bundle;
 
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.ActivityCarroBinding;
-import br.com.tsmweb.carros.data.Carro;
+import br.com.tsmweb.carros.domain.model.Carro;
 import br.com.tsmweb.carros.view.fragments.CarroFragment;
-import br.com.tsmweb.carros.view.viewModel.CarroViewModel;
+import br.com.tsmweb.carros.presentation.viewModel.CarroViewModel;
 
 public class CarroActivity extends BaseActivity {
 

@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.DialogEditarCarroBinding;
-import br.com.tsmweb.carros.view.viewModel.CarroViewModel;
+import br.com.tsmweb.carros.presentation.viewModel.CarroViewModel;
 
 public class EditarCarroDialog extends DialogFragment {
 

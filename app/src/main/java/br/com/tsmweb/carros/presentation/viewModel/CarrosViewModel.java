@@ -1,4 +1,4 @@
-package br.com.tsmweb.carros.view.viewModel;
+package br.com.tsmweb.carros.presentation.viewModel;
 
 import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
@@ -16,10 +16,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.tsmweb.carros.data.repository.RepositoryLocator;
+import br.com.tsmweb.carros.data.repository.CarroRepositoryImpl;
+import br.com.tsmweb.carros.domain.repository.CarroRepository;
 import br.com.tsmweb.carros.view.adapter.CarroAdapter;
-import br.com.tsmweb.carros.data.Carro;
-import br.com.tsmweb.carros.data.repository.ICarroRepository;
+import br.com.tsmweb.carros.domain.model.Carro;
 import br.com.tsmweb.carros.utils.IOUtils;
 import br.com.tsmweb.carros.utils.SDCardUtils;
 import io.reactivex.Observable;
@@ -31,7 +31,7 @@ public class CarrosViewModel extends AndroidViewModel implements LifecycleObserv
 
     private static final String TAG = CarroViewModel.class.getSimpleName();
 
-    private ICarroRepository carroRepository;
+    private CarroRepository carroRepository;
 
     private CarroAdapter adapter = new CarroAdapter(this);
     private MutableLiveData<Carro> selected;
@@ -48,10 +48,8 @@ public class CarrosViewModel extends AndroidViewModel implements LifecycleObserv
     public CarrosViewModel(@NonNull Application application) {
         super(application);
 
-        // Obtém uma instância de ICarroRepository para manipular os dados dos carros
-        this.carroRepository = RepositoryLocator
-                .getInstance(application)
-                .locate(ICarroRepository.class);
+        // Obtém uma instância de CarroRepository para manipular os dados dos carros
+        this.carroRepository = null;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
@@ -152,6 +150,7 @@ public class CarrosViewModel extends AndroidViewModel implements LifecycleObserv
     public void downloadCarros(int tipo) {
         pullToRefresh.postValue(true);
 
+        /*
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(carroRepository.downloadCarrosFromAPI(tipo)
                 .subscribeOn(Schedulers.io())
@@ -168,6 +167,7 @@ public class CarrosViewModel extends AndroidViewModel implements LifecycleObserv
                             Log.d(TAG, err.getMessage(), err);
                         })
         );
+        */
     }
 
     // Retorna a lista de carros selecionados

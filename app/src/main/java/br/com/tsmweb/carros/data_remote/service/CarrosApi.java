@@ -1,4 +1,4 @@
-package br.com.tsmweb.carros.data.api;
+package br.com.tsmweb.carros.data_remote.service;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 

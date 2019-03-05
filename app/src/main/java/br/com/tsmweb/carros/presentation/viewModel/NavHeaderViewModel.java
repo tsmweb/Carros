@@ -1,4 +1,4 @@
-package br.com.tsmweb.carros.view.viewModel;
+package br.com.tsmweb.carros.presentation.viewModel;
 
 import androidx.lifecycle.ViewModel;
 import androidx.databinding.ObservableField;

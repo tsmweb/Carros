@@ -3,7 +3,6 @@ package br.com.tsmweb.carros.view.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.core.content.ContextCompat;
 
 import android.view.LayoutInflater;
 import android.view.View;

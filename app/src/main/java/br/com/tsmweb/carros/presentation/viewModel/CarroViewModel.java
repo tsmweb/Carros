@@ -1,4 +1,4 @@
-package br.com.tsmweb.carros.view.viewModel;
+package br.com.tsmweb.carros.presentation.viewModel;
 
 import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
@@ -7,9 +7,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.databinding.ObservableField;
 import androidx.annotation.NonNull;
 
-import br.com.tsmweb.carros.data.Carro;
-import br.com.tsmweb.carros.data.repository.ICarroRepository;
-import br.com.tsmweb.carros.data.repository.RepositoryLocator;
+import br.com.tsmweb.carros.domain.repository.CarroRepository;
+import br.com.tsmweb.carros.domain.model.Carro;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -18,7 +17,7 @@ public class CarroViewModel extends AndroidViewModel {
 
     private static final String TAG = CarroViewModel.class.getSimpleName();
 
-    private ICarroRepository carroRepository;
+    private CarroRepository carroRepository;
 
     public ObservableField<String> nome = new ObservableField<>();
     public ObservableField<String> descricao = new ObservableField<>();
@@ -31,10 +30,8 @@ public class CarroViewModel extends AndroidViewModel {
     public CarroViewModel(@NonNull Application application) {
         super(application);
 
-        // Obtém uma instância de ICarroRepository para manipular os dados dos carros
-        this.carroRepository = RepositoryLocator
-                .getInstance(application)
-                .locate(ICarroRepository.class);
+        // Obtém uma instância de CarroRepository para manipular os dados dos carros
+        this.carroRepository = null;
     }
 
     public void setCarro(Carro carro) {
@@ -60,7 +57,7 @@ public class CarroViewModel extends AndroidViewModel {
 
         // Salva as alterações no banco de dados
         CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(carroRepository.update(carro)
+        compositeDisposable.add(carroRepository.save(carro)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doAfterTerminate(() -> compositeDisposable.clear())

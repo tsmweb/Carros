@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.view.activity.CarroActivity;
 import br.com.tsmweb.carros.databinding.FragmentCarrosBinding;
-import br.com.tsmweb.carros.data.Carro;
+import br.com.tsmweb.carros.domain.model.Carro;
 import br.com.tsmweb.carros.utils.AlertUtils;
 import br.com.tsmweb.carros.utils.AndroidUtils;
-import br.com.tsmweb.carros.view.viewModel.CarrosViewModel;
+import br.com.tsmweb.carros.presentation.viewModel.CarrosViewModel;
 
 public class CarrosFragment extends BaseFragment {
 

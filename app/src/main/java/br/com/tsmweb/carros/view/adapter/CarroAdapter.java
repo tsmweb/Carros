@@ -16,8 +16,8 @@ import java.util.List;
 
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.AdapterCarroBinding;
-import br.com.tsmweb.carros.data.Carro;
-import br.com.tsmweb.carros.view.viewModel.CarrosViewModel;
+import br.com.tsmweb.carros.domain.model.Carro;
+import br.com.tsmweb.carros.presentation.viewModel.CarrosViewModel;
 
 public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHolder> {
 
