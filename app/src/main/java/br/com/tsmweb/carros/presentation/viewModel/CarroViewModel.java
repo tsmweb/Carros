@@ -7,17 +7,17 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.databinding.ObservableField;
 import androidx.annotation.NonNull;
 
-import br.com.tsmweb.carros.domain.repository.CarroRepository;
+import br.com.tsmweb.carros.domain.interactor.carros.DeleteCarro;
+import br.com.tsmweb.carros.domain.interactor.carros.SaveCarro;
 import br.com.tsmweb.carros.domain.model.Carro;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.observers.DisposableSingleObserver;
 
 public class CarroViewModel extends AndroidViewModel {
 
     private static final String TAG = CarroViewModel.class.getSimpleName();
 
-    private CarroRepository carroRepository;
+    private final SaveCarro saveCarro;
+    private final DeleteCarro deleteCarro;
 
     public ObservableField<String> nome = new ObservableField<>();
     public ObservableField<String> descricao = new ObservableField<>();
@@ -27,11 +27,11 @@ public class CarroViewModel extends AndroidViewModel {
 
     private Carro carro;
 
-    public CarroViewModel(@NonNull Application application) {
+    public CarroViewModel(@NonNull Application application, @NonNull SaveCarro saveCarro, @NonNull DeleteCarro deleteCarro) {
         super(application);
 
-        // Obtém uma instância de CarroRepository para manipular os dados dos carros
-        this.carroRepository = null;
+        this.saveCarro = saveCarro;
+        this.deleteCarro = deleteCarro;
     }
 
     public void setCarro(Carro carro) {
@@ -56,20 +56,17 @@ public class CarroViewModel extends AndroidViewModel {
         carro.setNome(nome.get());
 
         // Salva as alterações no banco de dados
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(carroRepository.save(carro)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doAfterTerminate(() -> compositeDisposable.clear())
-                .subscribe(
-                    ret -> {
-                        viewState.postValue(ViewState.update(true));
-                    },
-                    err -> {
-                        viewState.postValue(ViewState.error(err,true));
-                    }
-                )
-        );
+        saveCarro.execute(new DisposableSingleObserver<Long>() {
+            @Override
+            public void onSuccess(Long aLong) {
+                viewState.postValue(ViewState.update(true));
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                viewState.postValue(ViewState.error(e,true));
+            }
+        }, SaveCarro.Params.getParams(carro));
     }
 
     // Valida os valores informados pelo usuário
@@ -83,20 +80,24 @@ public class CarroViewModel extends AndroidViewModel {
 
     public void onCarroDelete() {
         // Deleta o carro
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(carroRepository.delete(carro)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doAfterTerminate(() -> compositeDisposable.clear())
-                .subscribe(
-                    ret -> {
-                        viewState.postValue(ViewState.delete(true));
-                    },
-                    err ->  {
-                        viewState.postValue(ViewState.error(err,true));
-                    }
-                )
-        );
+        deleteCarro.execute(new DisposableSingleObserver<Integer>() {
+            @Override
+            public void onSuccess(Integer integer) {
+                viewState.postValue(ViewState.delete(true));
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                viewState.postValue(ViewState.error(e,true));
+            }
+        }, DeleteCarro.Params.getParams(carro));
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+
+        saveCarro.dispose();
+        deleteCarro.dispose();
+    }
 }

@@ -8,12 +8,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Collections;
-import java.util.UUID;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
+import br.com.tsmweb.carros.data_local.DataFactory;
 import br.com.tsmweb.carros.data_local.db.CarrosDatabase;
 import br.com.tsmweb.carros.data_local.model.CarroEntity;
 
@@ -36,17 +36,7 @@ public class CarroDaoTest {
         ).build();
 
         carroDAO = carrosDatabase.carroDAO();
-
-        dummyCarro = new CarroEntity();
-        dummyCarro.setId(100);
-        dummyCarro.setTipo("classicos");
-        dummyCarro.setNome("Camaro");
-        dummyCarro.setDesc(UUID.randomUUID().toString() + " - Camaro");
-        dummyCarro.setUrlFoto(UUID.randomUUID().toString());
-        dummyCarro.setUrlVideo(UUID.randomUUID().toString());
-        dummyCarro.setUrlInfo(UUID.randomUUID().toString());
-        dummyCarro.setLatitude(UUID.randomUUID().toString());
-        dummyCarro.setLongitude(UUID.randomUUID().toString());
+        dummyCarro = DataFactory.getDummyCarroEntity();
     }
 
     @After
@@ -76,7 +66,7 @@ public class CarroDaoTest {
         carroDAO.save(dummyCarro);
         carroDAO.getAllByTipo("classicos")
                 .test()
-                .assertValue(listCarroEntity -> listCarroEntity != null && listCarroEntity.contains(dummyCarro));
+                .assertValue(it -> it != null && it.contains(dummyCarro));
     }
 
     @Test
@@ -84,7 +74,7 @@ public class CarroDaoTest {
         carroDAO.save(dummyCarro);
         carroDAO.getAll()
                 .test()
-                .assertValue(listCarroEntity -> listCarroEntity != null && listCarroEntity.contains(dummyCarro));
+                .assertValue(it -> it != null && it.contains(dummyCarro));
     }
 
     @Test

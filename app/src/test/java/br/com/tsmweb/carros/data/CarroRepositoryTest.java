@@ -10,8 +10,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
-import java.util.UUID;
 
+import br.com.tsmweb.carros.DataFactory;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.data.repository.CarroRepositoryImpl;
 import br.com.tsmweb.carros.data.source.CarroLocalDataSource;
@@ -39,17 +39,7 @@ public class CarroRepositoryTest {
         MockitoAnnotations.initMocks(this);
 
         carroRepository = new CarroRepositoryImpl(carroLocalDataSource, carroRemoteDataSource);
-
-        dummyCarro = new Carro();
-        dummyCarro.setId(100);
-        dummyCarro.setTipo("classicos");
-        dummyCarro.setNome("Camaro");
-        dummyCarro.setDesc(UUID.randomUUID().toString() + " - Camaro");
-        dummyCarro.setUrlFoto(UUID.randomUUID().toString());
-        dummyCarro.setUrlVideo(UUID.randomUUID().toString());
-        dummyCarro.setUrlInfo(UUID.randomUUID().toString());
-        dummyCarro.setLatitude(UUID.randomUUID().toString());
-        dummyCarro.setLongitude(UUID.randomUUID().toString());
+        dummyCarro = DataFactory.getDummyCarro();
     }
 
     @Test
@@ -57,8 +47,9 @@ public class CarroRepositoryTest {
         when(carroLocalDataSource.save(any(Carro.class))).thenReturn(Single.just(100L));
 
         carroRepository.save(dummyCarro)
-            .test()
-            .assertValue(id -> id == 100);
+                .test()
+                .assertComplete()
+                .assertValue(it -> it == 100);
     }
 
     @Test
@@ -67,7 +58,8 @@ public class CarroRepositoryTest {
 
         carroRepository.delete(dummyCarro)
                 .test()
-                .assertValue(i -> i == 1);
+                .assertComplete()
+                .assertValue(it -> it == 1);
     }
 
     @Test
@@ -76,7 +68,8 @@ public class CarroRepositoryTest {
 
         carroRepository.delete(Collections.singletonList(dummyCarro))
                 .test()
-                .assertValue(i -> i == 1);
+                .assertComplete()
+                .assertValue(it -> it == 1);
     }
 
     @Test
@@ -87,6 +80,7 @@ public class CarroRepositoryTest {
 
         carroRepository.getCarrosByTipo(R.string.classicos)
                 .test()
+                .assertComplete()
                 .assertValue(listCarro -> listCarro != null && listCarro.contains(dummyCarro));
     }
 
@@ -100,6 +94,7 @@ public class CarroRepositoryTest {
 
         carroRepository.updateCarros(R.string.classicos)
                 .test()
+                .assertComplete()
                 .assertComplete();
     }
 

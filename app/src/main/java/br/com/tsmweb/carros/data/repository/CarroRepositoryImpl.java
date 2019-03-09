@@ -46,27 +46,30 @@ public class CarroRepositoryImpl implements CarroRepository {
     @Override
     public Flowable<List<Carro>> getCarrosByTipo(int tipo) {
         return carroLocalDataSource.getCarrosByTipo(tipo);
-
         /*
                 .doOnNext(carros -> {
                     if (carros.isEmpty()) {
                         CompositeDisposable compositeDisposable = new CompositeDisposable();
-                        updateCarros(tipo)
-                                .doAfterTerminate(() -> compositeDisposable.clear())
-                                .subscribe();
+                        compositeDisposable.add(
+                                updateCarros(tipo)
+                                    .doAfterTerminate(() -> compositeDisposable.clear())
+                                    .subscribe()
+                        );
                     }
                 });
-         */
+        */
     }
 
     @Override
     public Completable updateCarros(int tipo) {
         return Completable.create(emitter -> {
+            String tipoStr = AppUtils.getTipoCarroByResource(tipo);
+
             try {
                 Disposable disposable = carroRemoteDataSource.getCarros(tipo)
                         .subscribe(carros -> {
                             for (Carro carro : carros) {
-                                carro.setTipo(AppUtils.getTipoCarroByResource(tipo));
+                                carro.setTipo(tipoStr);
                                 carroLocalDataSource.save(carro).subscribe();
                                     //.subscribe(
                                     //        id -> Log.d(TAG, "Salvando o carro " + id +" - "+ carro.getNome()),

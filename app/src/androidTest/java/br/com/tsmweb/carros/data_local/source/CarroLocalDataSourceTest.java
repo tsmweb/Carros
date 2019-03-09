@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Collections;
-import java.util.UUID;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
@@ -15,6 +14,7 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.data.source.CarroLocalDataSource;
+import br.com.tsmweb.carros.data_local.DataFactory;
 import br.com.tsmweb.carros.data_local.dao.CarroDAO;
 import br.com.tsmweb.carros.data_local.db.CarrosDatabase;
 import br.com.tsmweb.carros.data_local.mapper.CarroMapper;
@@ -41,17 +41,7 @@ public class CarroLocalDataSourceTest {
 
         carroDAO = carrosDatabase.carroDAO();
         carroLocalDataSource = new CarroLocalDataSourceImpl(carroDAO, new CarroMapper());
-
-        dummyCarro = new Carro();
-        dummyCarro.setId(100);
-        dummyCarro.setTipo("classicos");
-        dummyCarro.setNome("Camaro");
-        dummyCarro.setDesc(UUID.randomUUID().toString() + " - Camaro");
-        dummyCarro.setUrlFoto(UUID.randomUUID().toString());
-        dummyCarro.setUrlVideo(UUID.randomUUID().toString());
-        dummyCarro.setUrlInfo(UUID.randomUUID().toString());
-        dummyCarro.setLatitude(UUID.randomUUID().toString());
-        dummyCarro.setLongitude(UUID.randomUUID().toString());
+        dummyCarro = DataFactory.getDummyCarro();
     }
 
     @After
@@ -63,7 +53,7 @@ public class CarroLocalDataSourceTest {
     public void saveCarro() {
         carroLocalDataSource.save(dummyCarro)
                 .test()
-                .assertValue(id -> id == 100);
+                .assertValue(it -> it == 100);
     }
 
     @Test
@@ -74,7 +64,7 @@ public class CarroLocalDataSourceTest {
 
         carroLocalDataSource.delete(dummyCarro)
                 .test()
-                .assertValue(v -> v > 0);
+                .assertValue(it -> it > 0);
     }
 
     @Test
@@ -85,7 +75,7 @@ public class CarroLocalDataSourceTest {
 
         carroLocalDataSource.delete(Collections.singletonList(dummyCarro))
                 .test()
-                .assertValue(v -> v > 0);
+                .assertValue(it -> it > 0);
     }
 
     @Test
@@ -96,7 +86,7 @@ public class CarroLocalDataSourceTest {
 
         carroLocalDataSource.getCarrosByTipo(R.string.classicos)
                 .test()
-                .assertValue(listCarros -> listCarros != null && listCarros.contains(dummyCarro));
+                .assertValue(it -> it != null && it.contains(dummyCarro));
     }
 
 }

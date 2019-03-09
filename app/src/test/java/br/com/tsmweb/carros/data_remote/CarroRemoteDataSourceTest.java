@@ -11,17 +11,15 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.UUID;
 
 import br.com.tsmweb.carros.R;
+import br.com.tsmweb.carros.DataFactory;
 import br.com.tsmweb.carros.data.source.CarroRemoteDataSource;
 import br.com.tsmweb.carros.data_remote.mapper.CarroMapper;
 import br.com.tsmweb.carros.data_remote.model.CarroEntity;
 import br.com.tsmweb.carros.data_remote.model.CarrosResponse;
 import br.com.tsmweb.carros.data_remote.service.CarrosService;
 import br.com.tsmweb.carros.data_remote.source.CarroRemoteDataSourceImpl;
-import br.com.tsmweb.carros.domain.model.Carro;
 import io.reactivex.Single;
 
 @RunWith(JUnit4.class)
@@ -40,18 +38,8 @@ public class CarroRemoteDataSourceTest {
 
         carroRemoteDataSource = new CarroRemoteDataSourceImpl(carrosService, new CarroMapper());
 
-        CarroEntity dummyCarro = new CarroEntity();
-        dummyCarro.setTipo("classicos");
-        dummyCarro.setNome("Camaro");
-        dummyCarro.setDesc(UUID.randomUUID().toString() + " - Camaro");
-        dummyCarro.setUrlFoto(UUID.randomUUID().toString());
-        dummyCarro.setUrlVideo(UUID.randomUUID().toString());
-        dummyCarro.setUrlInfo(UUID.randomUUID().toString());
-        dummyCarro.setLatitude(UUID.randomUUID().toString());
-        dummyCarro.setLongitude(UUID.randomUUID().toString());
-
         List<CarroEntity> listCarro = new ArrayList<>();
-        listCarro.add(dummyCarro);
+        listCarro.add(DataFactory.getDummyCarroEntity());
 
         CarrosResponse.CarroResult carroResult = new CarrosResponse().new CarroResult();
         carroResult.listCarro = listCarro;
