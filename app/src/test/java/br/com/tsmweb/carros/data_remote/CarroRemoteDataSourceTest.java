@@ -9,14 +9,10 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.DataFactory;
 import br.com.tsmweb.carros.data.source.CarroRemoteDataSource;
 import br.com.tsmweb.carros.data_remote.mapper.CarroMapper;
-import br.com.tsmweb.carros.data_remote.model.CarroEntity;
 import br.com.tsmweb.carros.data_remote.model.CarrosResponse;
 import br.com.tsmweb.carros.data_remote.service.CarrosService;
 import br.com.tsmweb.carros.data_remote.source.CarroRemoteDataSourceImpl;
@@ -31,32 +27,49 @@ public class CarroRemoteDataSourceTest {
     private CarroRemoteDataSource carroRemoteDataSource;
 
     private CarrosResponse dummyCarroResponse;
+    private int tipo;
+    private String tipoStr;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
         carroRemoteDataSource = new CarroRemoteDataSourceImpl(carrosService, new CarroMapper());
-
-        List<CarroEntity> listCarro = new ArrayList<>();
-        listCarro.add(DataFactory.getDummyCarroEntity());
-
-        CarrosResponse.CarroResult carroResult = new CarrosResponse().new CarroResult();
-        carroResult.listCarro = listCarro;
-
-        dummyCarroResponse = new CarrosResponse();
-        dummyCarroResponse.carros = carroResult;
-
-        String tipo = "classicos";
-
-        when(carrosService.getCarrosByTipo(tipo)).thenReturn(Single.just(dummyCarroResponse));
+        dummyCarroResponse = DataFactory.makeDummyCarroResponse();
+        tipo = R.string.classicos;
+        tipoStr = "classicos";
     }
 
     @Test
-    public void getCarros() {
-        carroRemoteDataSource.getCarros(R.string.classicos)
+    public void getCarrosCompletes() {
+        stubGetCarros(Single.just(dummyCarroResponse));
+
+        carroRemoteDataSource.getCarros(tipo)
                 .test()
-                .assertValue(listCarro -> listCarro != null && listCarro.get(0).getNome().equals("Camaro"));
+                .assertComplete();
+    }
+
+    @Test
+    public void getCarrosSuccess() {
+        stubGetCarros(Single.just(dummyCarroResponse));
+
+        carroRemoteDataSource.getCarros(tipo)
+                .test()
+                .assertValue(it -> it != null && it.size() > 0);
+    }
+
+    @Test
+    public void getCarrosErrors() {
+        Throwable err = new Throwable("Test Error");
+        stubGetCarros(Single.error(err));
+
+        carroRemoteDataSource.getCarros(tipo)
+                .test()
+                .assertError(err);
+    }
+
+    private void stubGetCarros(Single single) {
+        when(carrosService.getCarrosByTipo(tipoStr)).thenReturn(single);
     }
 
 }

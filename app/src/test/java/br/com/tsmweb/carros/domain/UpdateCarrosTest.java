@@ -27,21 +27,47 @@ public class UpdateCarrosTest {
     @Mock
     private PostExecutionThread postExecutionThread;
 
+    private int tipo;
+
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
         updateCarros = new UpdateCarros(carroRepository, postExecutionThread);
+        tipo = R.string.classicos;
 
-        when(carroRepository.updateCarros(R.string.classicos)).thenReturn(Completable.complete());
         when(postExecutionThread.getScheduler()).thenReturn(new TestScheduler());
     }
 
     @Test
-    public void updateCarros() {
-        updateCarros.buildUseCaseCompletable(UpdateCarros.Params.getParams(R.string.classicos))
+    public void updateCarrosCompletes() {
+        stubUpdateCarros(Completable.complete());
+
+        updateCarros.buildUseCaseCompletable(UpdateCarros.Params.getParams(tipo))
                 .test()
                 .assertComplete();
+    }
+
+    @Test
+    public void updateCarrosErros() {
+        Throwable err = new Throwable("Test Error");
+        stubUpdateCarros(Completable.error(err));
+
+        updateCarros.buildUseCaseCompletable(UpdateCarros.Params.getParams(tipo))
+                .test()
+                .assertError(err);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void updateCarrorsThrowException() {
+        stubUpdateCarros(Completable.complete());
+
+        updateCarros.buildUseCaseCompletable(null)
+                .test();
+    }
+
+    private void stubUpdateCarros(Completable completable) {
+        when(carroRepository.updateCarros(tipo)).thenReturn(completable);
     }
 
 }

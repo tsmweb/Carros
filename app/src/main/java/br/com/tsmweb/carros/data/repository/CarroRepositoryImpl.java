@@ -65,23 +65,19 @@ public class CarroRepositoryImpl implements CarroRepository {
         return Completable.create(emitter -> {
             String tipoStr = AppUtils.getTipoCarroByResource(tipo);
 
-            try {
-                Disposable disposable = carroRemoteDataSource.getCarros(tipo)
-                        .subscribe(carros -> {
-                            for (Carro carro : carros) {
-                                carro.setTipo(tipoStr);
-                                carroLocalDataSource.save(carro).subscribe();
-                                    //.subscribe(
-                                    //        id -> Log.d(TAG, "Salvando o carro " + id +" - "+ carro.getNome()),
-                                    //        err -> emitter.onError(err));
-                            }
-                        });
+            Disposable disposable = carroRemoteDataSource.getCarros(tipo)
+                    .subscribe(carros -> {
+                        for (Carro carro : carros) {
+                            carro.setTipo(tipoStr);
+                            carroLocalDataSource.save(carro)
+                                .subscribe(
+                                        id -> {},//Log.d(TAG, "Salvando o carro " + id +" - "+ carro.getNome()),
+                                        emitter::onError);
+                        }
+                    }, emitter::onError);
 
-                emitter.setDisposable(Disposables.fromAction(() -> disposable.dispose()));
-                emitter.onComplete();
-            } catch(Exception e) {
-                emitter.onError(e);
-            }
+            emitter.setDisposable(Disposables.fromAction(() -> disposable.dispose()));
+            emitter.onComplete();
         });
     }
 

@@ -7,7 +7,7 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -31,26 +31,56 @@ public class GetCarrosTest {
     @Mock
     private PostExecutionThread postExecutionThread;
 
-    private Carro dummyCarro;
+    private List<Carro> dummyCarros;
+    private int tipo;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
         getCarros = new GetCarros(carroRepository, postExecutionThread);
-        dummyCarro = DataFactory.getDummyCarro();
+        dummyCarros = DataFactory.makeDummyListCarro(3);
+        tipo = R.string.classicos;
 
-        when(carroRepository.getCarrosByTipo(R.string.classicos)).thenReturn(
-            Flowable.just(Collections.singletonList(dummyCarro))
-        );
         when(postExecutionThread.getScheduler()).thenReturn(new TestScheduler());
     }
 
     @Test
-    public void getCarros() {
-        getCarros.buildUseCaseFlowable(GetCarros.Params.getParams(R.string.classicos))
+    public void getCarrosCompletes() {
+        stubGetCarros(Flowable.just(dummyCarros));
+
+        getCarros.buildUseCaseFlowable(GetCarros.Params.getParams(tipo))
                 .test()
-                .assertValue(it -> it != null && it.contains(dummyCarro));
+                .assertComplete();
+    }
+
+    @Test
+    public void getCarrosReturnsData() {
+        stubGetCarros(Flowable.just(dummyCarros));
+
+        getCarros.buildUseCaseFlowable(GetCarros.Params.getParams(tipo))
+                .test()
+                .assertValue(dummyCarros);
+    }
+
+    @Test
+    public void getCarrosErrors() {
+        Throwable err = new Throwable("Test Error");
+        stubGetCarros(Flowable.error(err));
+
+        getCarros.buildUseCaseFlowable(GetCarros.Params.getParams(tipo))
+                .test()
+                .assertError(err);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getCarrosThrowException() {
+        getCarros.buildUseCaseFlowable(null)
+                .test();
+    }
+
+    private void stubGetCarros(Flowable flowable) {
+        when(carroRepository.getCarrosByTipo(tipo)).thenReturn(flowable);
     }
 
 }

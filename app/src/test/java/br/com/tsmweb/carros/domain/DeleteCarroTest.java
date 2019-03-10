@@ -27,21 +27,54 @@ public class DeleteCarroTest {
     @Mock
     private PostExecutionThread postExecutionThread;
 
+    private Carro dummyCarro;
+
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
 
         deleteCarro = new DeleteCarro(carroRepository, postExecutionThread);
+        dummyCarro = DataFactory.makeDummyCarro(1);
 
-        when(carroRepository.delete(any(Carro.class))).thenReturn(Single.just(1));
         when(postExecutionThread.getScheduler()).thenReturn(new TestScheduler());
     }
 
     @Test
-    public void execute() {
-        deleteCarro.buildUseCaseSingle(DeleteCarro.Params.getParams(DataFactory.getDummyCarro()))
+    public void deleteCarroCompletes() {
+        stubDeleteCarro(Single.just(1));
+
+        deleteCarro.buildUseCaseSingle(DeleteCarro.Params.getParams(dummyCarro))
+                .test()
+                .assertComplete();
+    }
+
+    @Test
+    public void deleteCarroSuccess() {
+        stubDeleteCarro(Single.just(1));
+
+        deleteCarro.buildUseCaseSingle(DeleteCarro.Params.getParams(dummyCarro))
                 .test()
                 .assertValue(it -> it == 1);
+    }
+
+    @Test
+    public void deleteCarroErrors() {
+        Throwable err = new Throwable("Test Error");
+        stubDeleteCarro(Single.error(err));
+
+        deleteCarro.buildUseCaseSingle(DeleteCarro.Params.getParams(dummyCarro))
+                .test()
+                .assertError(err);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteCarroThrowException() {
+        deleteCarro.buildUseCaseSingle(null)
+                .test();
+    }
+
+    private void stubDeleteCarro(Single single) {
+        when(carroRepository.delete(any(Carro.class))).thenReturn(single);
     }
 
 }
