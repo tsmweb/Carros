@@ -5,8 +5,8 @@
 
     <data>
         <variable
-            name="viewModal"
-            type="br.com.tsmweb.carros.presentation.viewModel.CarroViewModel" />
+            name="carro"
+            type="br.com.tsmweb.carros.presentation.model.CarroBinding" />
     </data>
 
     <LinearLayout
@@ -51,7 +51,7 @@
                     android:layout_marginTop="10dp"
                     android:ellipsize="end"
                     android:textSize="16sp"
-                    android:text="@{viewModal.descricao}"/>
+                    android:text="@{carro.desc}"/>
 
             </LinearLayout>
 
@@ -94,7 +94,7 @@
                         android:layout_height="@dimen/img_carro_adapter_height"
                         android:layout_gravity="center"
                         android:alpha="0.5"
-                        android:src="@{viewModal.urlFoto}"/>
+                        android:src="@{carro.urlFoto}"/>
 
                     <ImageView
                         android:id="@+id/imgPlayVideo"

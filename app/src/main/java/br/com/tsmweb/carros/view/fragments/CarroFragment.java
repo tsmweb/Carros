@@ -37,26 +37,37 @@ public class CarroFragment extends BaseFragment {
 
         // Cria o viewModel
         carroViewModel = ViewModelProviders.of(getActivity()).get(CarroViewModel.class);
-        binding.setViewModal(carroViewModel);
-
-        startViewModalObservable();
+        subscriberViewModalObservable();
     }
 
-    private void startViewModalObservable() {
-        carroViewModel.getState().observe(getViewLifecycleOwner(), state -> {
+    private void subscriberViewModalObservable() {
+        carroViewModel.getLoadState().observe(getViewLifecycleOwner(), state -> {
             switch (state.status) {
-                case UPDATE:
-                    if (state.data) {
-                        toast(R.string.carro_atualizado);
-                    }
-
+                case SUCCESS:
+                    binding.setCarro(state.data);
                     break;
-                case DELETE:
-                    if (state.data) {
-                        // Fecha a activity
-                        getActivity().finish();
-                    }
+            }
+        });
 
+        carroViewModel.getUpdateState().observe(getViewLifecycleOwner(), state -> {
+            switch (state.status) {
+                case SUCCESS:
+                    toast(R.string.carro_atualizado);
+                    break;
+                case ERROR:
+                    toast(state.error.getMessage());
+                    break;
+            }
+        });
+
+        carroViewModel.getDeleteState().observe(getViewLifecycleOwner(), state -> {
+            switch (state.status) {
+                case SUCCESS:
+                    // Fecha a activity
+                    getActivity().finish();
+                    break;
+                case ERROR:
+                    toast(R.string.msg_error_update_carro);
                     break;
             }
         });

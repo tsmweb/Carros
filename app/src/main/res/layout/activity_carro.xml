@@ -5,8 +5,8 @@
 
     <data>
         <variable
-            name="viewModal"
-            type="br.com.tsmweb.carros.presentation.viewModel.CarroViewModel" />
+            name="carro"
+            type="br.com.tsmweb.carros.presentation.model.CarroBinding" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -44,7 +44,7 @@
                 android:fitsSystemWindows="true"
                 app:contentScrim="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:title="@{viewModal.nome}">
+                app:title="@{carro.nome}">
 
                 <ImageView
                     android:id="@+id/appbar_img"
@@ -53,7 +53,7 @@
                     android:background="@drawable/header_appbar"
                     android:fitsSystemWindows="true"
                     app:layout_collapseMode="parallax"
-                    android:src="@{viewModal.urlFoto}"/>
+                    android:src="@{carro.urlFoto}"/>
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"

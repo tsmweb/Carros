@@ -60,6 +60,8 @@ Versao %s<br><br>
     <string name="mapa">Mapa</string>
     <string name="msg_alerta_permissao">Para utilizar este aplicativo, você precisa aceitar as permissões.</string>
     <string name="msg_error_conexao_indisponivel">Conexão indisponível. Verifique seu Wi-Fi ou 3G.</string>
+    <string name="msg_error_valida_dados">Erro ao validar os dados!</string>
+    <string name="msg_error_update_carro">Erro ao atualizar o carro!</string>
 
     <!-- O -->
     <string name="ok">OK</string>

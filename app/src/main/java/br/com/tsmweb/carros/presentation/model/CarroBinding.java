@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
+import br.com.tsmweb.carros.BR;
 
 public class CarroBinding extends BaseObservable implements Parcelable {
 
@@ -38,6 +39,7 @@ public class CarroBinding extends BaseObservable implements Parcelable {
         this.id = id;
     }
 
+    @Bindable
     public String getTipo() {
         return tipo;
     }
@@ -46,64 +48,75 @@ public class CarroBinding extends BaseObservable implements Parcelable {
         this.tipo = tipo;
     }
 
+    @Bindable
     public String getNome() {
         return nome;
     }
 
-    @Bindable
     public void setNome(String nome) {
         this.nome = nome;
-        //notifyPropertyChanged();
+        notifyPropertyChanged(BR.nome);
     }
 
+    @Bindable
     public String getDesc() {
         return desc;
     }
 
     public void setDesc(String desc) {
         this.desc = desc;
+        notifyPropertyChanged(BR.desc);
     }
 
+    @Bindable
     public String getUrlFoto() {
         return urlFoto;
     }
 
     public void setUrlFoto(String urlFoto) {
         this.urlFoto = urlFoto;
+        notifyPropertyChanged(BR.urlFoto);
     }
 
+    @Bindable
     public String getUrlInfo() {
         return urlInfo;
     }
 
     public void setUrlInfo(String urlInfo) {
         this.urlInfo = urlInfo;
+        notifyPropertyChanged(BR.urlInfo);
     }
 
+    @Bindable
     public String getUrlVideo() {
         return urlVideo;
     }
 
     public void setUrlVideo(String urlVideo) {
         this.urlVideo = urlVideo;
+        notifyPropertyChanged(BR.urlVideo);
     }
 
+    @Bindable
     public String getLatitude() {
         return latitude;
     }
 
     public void setLatitude(String latitude) {
         this.latitude = latitude;
+        notifyPropertyChanged(BR.latitude);
     }
 
+    @Bindable
     public String getLongitude() {
         return longitude;
     }
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+        notifyPropertyChanged(BR.longitude);
     }
-
 
     @Override
     public int describeContents() {
@@ -152,4 +165,20 @@ public class CarroBinding extends BaseObservable implements Parcelable {
             return new CarroBinding[size];
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CarroBinding)) return false;
+
+        CarroBinding that = (CarroBinding) o;
+
+        return getId() == that.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (getId() ^ (getId() >>> 32));
+    }
+
 }

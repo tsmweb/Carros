@@ -7,20 +7,22 @@ import android.os.Bundle;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.ActivityCarroBinding;
 import br.com.tsmweb.carros.domain.model.Carro;
+import br.com.tsmweb.carros.presentation.model.CarroBinding;
 import br.com.tsmweb.carros.view.fragments.CarroFragment;
 import br.com.tsmweb.carros.presentation.viewModel.CarroViewModel;
 
 public class CarroActivity extends BaseActivity {
 
+    private ActivityCarroBinding binding;
     private CarroViewModel carroViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityCarroBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_carro);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_carro);
 
         Bundle bundle = getIntent().getBundleExtra("bundle");
-        Carro carro = bundle.getParcelable("carro");
+        CarroBinding carro = bundle.getParcelable("carro");
 
         // Configura a Toolbar como a action bar
         setUpToolbar();
@@ -29,7 +31,6 @@ public class CarroActivity extends BaseActivity {
 
         // Configura o ViewModal
         carroViewModel = ViewModelProviders.of(this).get(CarroViewModel.class);
-        binding.setViewModal(carroViewModel);
         carroViewModel.setCarro(carro);
 
         // Adiciona o fragment ao layout
@@ -43,6 +44,16 @@ public class CarroActivity extends BaseActivity {
                     .add(R.id.carro_fragment, frag)
                     .commit();
         }
+    }
+
+    private void subscriberViewModalObservable() {
+        carroViewModel.getLoadState().observe(this, state -> {
+            switch (state.status) {
+                case SUCCESS:
+                    binding.setCarro(state.data);
+                    break;
+            }
+        });
     }
 
 }

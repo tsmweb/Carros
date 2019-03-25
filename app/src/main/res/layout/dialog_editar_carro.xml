@@ -3,8 +3,8 @@
 
     <data>
         <variable
-            name="viewModal"
-            type="br.com.tsmweb.carros.presentation.viewModel.CarroViewModel" />
+            name="carro"
+            type="br.com.tsmweb.carros.presentation.model.CarroBinding" />
     </data>
 
     <LinearLayout
@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:text="@={viewModal.nome}" />
+            android:text="@={carro.nome}" />
 
         <Button
             android:id="@+id/btn_atualizar"
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="@string/atualizar"
             android:layout_gravity="right"
-            android:onClick="@{() -> viewModal.onCarroUpdate()}"/>
+            android:onClick="onCarroUpdate"/>
 
     </LinearLayout>
 

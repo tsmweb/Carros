@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.DialogEditarCarroBinding;
@@ -68,29 +69,48 @@ public class EditarCarroDialog extends DialogFragment {
 
         // Cria o viewModel
         carroViewModel = ViewModelProviders.of(getActivity()).get(CarroViewModel.class);
-        binding.setViewModal(carroViewModel);
-
-        startViewModalObservable();
+        subscriberViewModalObservable();
     }
 
-    private void startViewModalObservable() {
-        carroViewModel.getState().observe(getViewLifecycleOwner(), state -> {
+    public void onCarroUpdate(View view) {
+        carroViewModel.onCarroUpdate();
+    }
+
+    private void subscriberViewModalObservable() {
+        carroViewModel.getLoadState().observe(getViewLifecycleOwner(), state -> {
             switch (state.status) {
-                case UPDATE:
-                    if (state.data) {
-                        // Fecha o DialogFragment
-                        dismiss();
-                    }
-
-                    break;
-                case ERROR:
-                    if (state.data) {
-                        binding.edtNome.setError(getString(R.string.informe_nome));
-                    }
-
+                case SUCCESS:
+                    binding.setCarro(state.data);
                     break;
             }
         });
+
+        carroViewModel.getValidationState().observe(getViewLifecycleOwner(), state -> {
+            switch (state.status) {
+                case INVALID:
+                    handleValidation(state.data);
+                    break;
+                case ERROR:
+                    Toast.makeText(getContext(), R.string.msg_error_valida_dados, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+
+        carroViewModel.getUpdateState().observe(getViewLifecycleOwner(), state -> {
+            switch (state.status) {
+                case SUCCESS:
+                case ERROR:
+                    // Fecha o DialogFragment
+                    dismiss();
+                    break;
+            }
+        });
+    }
+
+    private void handleValidation(String field) {
+        if (field.equals("nome")) {
+            binding.edtNome.setError(getString(R.string.informe_nome));
+        }
     }
 
 }
