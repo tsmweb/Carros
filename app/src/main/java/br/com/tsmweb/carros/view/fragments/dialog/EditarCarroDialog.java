@@ -9,14 +9,17 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import br.com.tsmweb.carros.CarrosApplication;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.DialogEditarCarroBinding;
 import br.com.tsmweb.carros.presentation.viewModel.CarroViewModel;
+import br.com.tsmweb.carros.presentation.viewModel.CarroVmFactory;
 
 public class EditarCarroDialog extends DialogFragment {
 
@@ -68,12 +71,12 @@ public class EditarCarroDialog extends DialogFragment {
         super.onActivityCreated(savedInstanceState);
 
         // Cria o viewModel
-        carroViewModel = ViewModelProviders.of(getActivity()).get(CarroViewModel.class);
-        subscriberViewModalObservable();
-    }
+        carroViewModel = ViewModelProviders.of(getActivity(), new CarroVmFactory(CarrosApplication.getInstance())).get(CarroViewModel.class);
 
-    public void onCarroUpdate(View view) {
-        carroViewModel.onCarroUpdate();
+        // Dispara o método responsavel por atualizar o carro no ViewModel
+        binding.btnAtualizar.setOnClickListener(v -> carroViewModel.onCarroUpdate());
+
+        subscriberViewModalObservable();
     }
 
     private void subscriberViewModalObservable() {

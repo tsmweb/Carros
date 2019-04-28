@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,8 +12,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import br.com.tsmweb.carros.CarrosApplication;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.FragmentCarroBinding;
+import br.com.tsmweb.carros.presentation.model.CarroBinding;
+import br.com.tsmweb.carros.presentation.viewModel.CarroVmFactory;
+import br.com.tsmweb.carros.presentation.viewModel.ViewState;
 import br.com.tsmweb.carros.view.fragments.dialog.DeletarCarroDialog;
 import br.com.tsmweb.carros.view.fragments.dialog.EditarCarroDialog;
 import br.com.tsmweb.carros.presentation.viewModel.CarroViewModel;
@@ -36,41 +41,59 @@ public class CarroFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         // Cria o viewModel
-        carroViewModel = ViewModelProviders.of(getActivity()).get(CarroViewModel.class);
+        carroViewModel = ViewModelProviders.of(getActivity(), new CarroVmFactory(CarrosApplication.getInstance())).get(CarroViewModel.class);
         subscriberViewModalObservable();
     }
 
     private void subscriberViewModalObservable() {
-        carroViewModel.getLoadState().observe(getViewLifecycleOwner(), state -> {
-            switch (state.status) {
-                case SUCCESS:
-                    binding.setCarro(state.data);
-                    break;
-            }
+        // Observa o carregamento das informações da base de dados
+        carroViewModel.getLoadState().observe(this, state -> {
+            handleLoadState(state);
         });
 
+        // Observa a atualização das informações na base de dados
         carroViewModel.getUpdateState().observe(getViewLifecycleOwner(), state -> {
-            switch (state.status) {
-                case SUCCESS:
-                    toast(R.string.carro_atualizado);
-                    break;
-                case ERROR:
-                    toast(state.error.getMessage());
-                    break;
-            }
+            handleUpdateState(state);
         });
 
+        // Observa quando o carro foi deletado
         carroViewModel.getDeleteState().observe(getViewLifecycleOwner(), state -> {
-            switch (state.status) {
-                case SUCCESS:
-                    // Fecha a activity
-                    getActivity().finish();
-                    break;
-                case ERROR:
-                    toast(R.string.msg_error_update_carro);
-                    break;
-            }
+            handleDeleteState(state);
         });
+    }
+
+    // Trata o resultado do carregamento das informações da base de dados
+    private void handleLoadState(final ViewState<CarroBinding> state) {
+        switch (state.status) {
+            case SUCCESS:
+                binding.setCarro(state.data);
+                break;
+        }
+    }
+
+    // Trata o resultado da atualização das informações na base de dados
+    private void handleUpdateState(final ViewState<Long> state) {
+        switch (state.status) {
+            case SUCCESS:
+                toast(R.string.carro_atualizado);
+                break;
+            case ERROR:
+                toast(state.error.getMessage());
+                break;
+        }
+    }
+
+    // Trata o resultado da exclusão de um carro da base de dados
+    private void handleDeleteState(ViewState<Integer> state) {
+        switch (state.status) {
+            case SUCCESS:
+                // Fecha a activity
+                getActivity().finish();
+                break;
+            case ERROR:
+                toast(R.string.msg_error_delete_carro);
+                break;
+        }
     }
 
     @Override

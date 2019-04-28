@@ -41,6 +41,11 @@ public class CarroLocalDataSourceImpl implements CarroLocalDataSource {
     }
 
     @Override
+    public Single<Integer> deleteCarrosByTipo(String tipo) {
+        return Single.fromCallable(() -> carroDAO.deleteCarrosByTipo(tipo));
+    }
+
+    @Override
     public Flowable<List<Carro>> getCarrosByTipo(int tipo) {
         return carroDAO.getAllByTipo(AppUtils.getTipoCarroByResource(tipo))
                 .map(ce -> mapperToDomain(ce));

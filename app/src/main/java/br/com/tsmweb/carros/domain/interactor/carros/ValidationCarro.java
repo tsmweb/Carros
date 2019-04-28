@@ -16,11 +16,11 @@ public class ValidationCarro extends SingleUseCase<String, ValidationCarro.Param
         if (params == null) throw new IllegalArgumentException("Params can't be null");
 
         return Single.fromCallable(() -> {
-            if (params.carro.getNome().trim().length() == 0) {
+            if (params.carro.getNome() == null || params.carro.getNome().trim().length() == 0) {
                 return "nome";
             }
 
-            return null;
+            return "OK";
         });
     }
 

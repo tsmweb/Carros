@@ -1,9 +1,10 @@
 package br.com.tsmweb.carros.view.adapter;
 
-import android.content.Context;
 import androidx.databinding.DataBindingUtil;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,22 +17,25 @@ import java.util.List;
 
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.AdapterCarroBinding;
-import br.com.tsmweb.carros.domain.model.Carro;
-import br.com.tsmweb.carros.presentation.viewModel.CarrosViewModel;
+import br.com.tsmweb.carros.presentation.model.CarroBinding;
 
 public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHolder> {
 
     private static final String TAG = CarroAdapter.class.getSimpleName();
 
     private LayoutInflater inflater;
-    private List<Carro> carros;
-    private CarrosViewModel viewModal;
+    private List<CarroBinding> carros;
     private Context context;
 
-    public CarroAdapter(CarrosViewModel viewModal) {
-        this.viewModal = viewModal;
+    private CarroOnClickListener onClickListener;
+    private CarroOnLongClickListener onLongClickListener;
+
+    public CarroAdapter(@NonNull Context context, CarroOnClickListener onClickListener, CarroOnLongClickListener onLongClickListener) {
+        this.context = context;
+        this.onClickListener = onClickListener;
+        this.onLongClickListener = onLongClickListener;
+
         this.carros = new ArrayList<>();
-        this.context = viewModal.getApplication().getApplicationContext();
     }
 
     @NonNull
@@ -41,8 +45,7 @@ public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHo
             inflater = LayoutInflater.from(viewGroup.getContext());
         }
 
-        AdapterCarroBinding binding = DataBindingUtil.inflate(inflater,
-                R.layout.adapter_carro, viewGroup, false);
+        AdapterCarroBinding binding = DataBindingUtil.inflate(inflater, R.layout.adapter_carro, viewGroup, false);
         CarrosViewHolder holder = new CarrosViewHolder(binding);
 
         return holder;
@@ -50,10 +53,10 @@ public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final CarrosViewHolder holder, final int position) {
-        Carro carro = carros.get(position);
+        CarroBinding carro = carros.get(position);
 
         // Atualiza a view
-        holder.bind(viewModal, carro);
+        holder.bind(carro);
 
         holder.binding.progressImg.setVisibility(View.VISIBLE);
 
@@ -79,6 +82,15 @@ public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHo
         // A cor do texto é dark gray ou branca, depende da cor do fundo.
         int corFonte = context.getResources().getColor(carro.selected ? R.color.white : R.color.dark_gray);
         holder.binding.txtNome.setTextColor(corFonte);
+
+        // Listener para os eventos de click e long click
+        if (onClickListener != null) {
+            holder.binding.cardView.setOnClickListener(v -> onClickListener.onClickCarro(carro));
+        }
+
+        if (onLongClickListener != null) {
+            holder.binding.cardView.setOnLongClickListener(v -> onLongClickListener.onLongClickCarro(carro));
+        }
     }
 
     @Override
@@ -86,11 +98,7 @@ public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHo
         return this.carros != null ? this.carros.size() : 0;
     }
 
-    public List<Carro> getCarros() {
-        return carros;
-    }
-
-    public void setCarros(List<Carro> carros) {
+    public void setCarros(@NonNull List<CarroBinding> carros) {
         this.carros = carros;
         notifyDataSetChanged();
     }
@@ -106,11 +114,18 @@ public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarrosViewHo
             this.binding = binding;
         }
 
-        public void bind(CarrosViewModel viewModal, Carro carro) {
-            binding.setViewModel(viewModal);
+        public void bind(CarroBinding carro) {
             binding.setCarro(carro);
             binding.executePendingBindings();
         }
+    }
+
+    public interface CarroOnClickListener {
+        void onClickCarro(CarroBinding carro);
+    }
+
+    public interface CarroOnLongClickListener {
+        boolean onLongClickCarro(CarroBinding carro);
     }
 
 }

@@ -7,6 +7,8 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Objects;
+
 import br.com.tsmweb.carros.DataFactory;
 import br.com.tsmweb.carros.domain.executor.PostExecutionThread;
 import br.com.tsmweb.carros.domain.interactor.carros.ValidationCarro;
@@ -41,6 +43,20 @@ public class ValidationTest {
         validationCarro.buildUseCaseSingle(ValidationCarro.Params.getParams(dummyCarro))
                 .test()
                 .assertValue("nome");
+    }
+
+    @Test
+    public void setValidationCarroOK() {
+        validationCarro.buildUseCaseSingle(ValidationCarro.Params.getParams(dummyCarro))
+                .test()
+                .assertValue("OK");
+    }
+
+    @Test
+    public void validationCarroComplete() {
+        validationCarro.buildUseCaseSingle(ValidationCarro.Params.getParams(dummyCarro))
+                .test()
+                .assertComplete();
     }
 
     @Test(expected = IllegalArgumentException.class)

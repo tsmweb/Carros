@@ -4,10 +4,11 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 
+import br.com.tsmweb.carros.CarrosApplication;
 import br.com.tsmweb.carros.R;
 import br.com.tsmweb.carros.databinding.ActivityCarroBinding;
-import br.com.tsmweb.carros.domain.model.Carro;
 import br.com.tsmweb.carros.presentation.model.CarroBinding;
+import br.com.tsmweb.carros.presentation.viewModel.CarroVmFactory;
 import br.com.tsmweb.carros.view.fragments.CarroFragment;
 import br.com.tsmweb.carros.presentation.viewModel.CarroViewModel;
 
@@ -30,11 +31,14 @@ public class CarroActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Configura o ViewModal
-        carroViewModel = ViewModelProviders.of(this).get(CarroViewModel.class);
-        carroViewModel.setCarro(carro);
+        carroViewModel = ViewModelProviders.of(this, new CarroVmFactory(CarrosApplication.getInstance())).get(CarroViewModel.class);
+
+        subscriberViewModalObservable();
 
         // Adiciona o fragment ao layout
         if (savedInstanceState == null) {
+            carroViewModel.setCarro(carro);
+
             // Cria o fragment com o mesmo Bundle (args) da intent
             CarroFragment frag = new CarroFragment();
             frag.setArguments(getIntent().getExtras());

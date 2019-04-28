@@ -5,11 +5,7 @@
     <data>
         <variable
             name="carro"
-            type="br.com.tsmweb.carros.domain.model.Carro" />
-
-        <variable
-            name="viewModel"
-            type="br.com.tsmweb.carros.presentation.viewModel.CarrosViewModel" />
+            type="br.com.tsmweb.carros.presentation.model.CarroBinding" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -24,9 +20,7 @@
         card_view:cardCornerRadius="2dp"
         card_view:cardElevation="6dp"
         android:foreground="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:onClick="@{() -> viewModel.onCarroItemClick(carro)}"
-        android:onLongClick="@{() -> viewModel.onCarroItemLongClick(carro)}">
+        android:clickable="true">
 
         <LinearLayout
             android:layout_width="match_parent"

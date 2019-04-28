@@ -37,6 +37,7 @@ Versao %s<br><br>
     <string name="esportivos">Esportivos</string>
     <string name="editar">Editar</string>
     <string name="excluir">Excluir</string>
+    <string name="error_operation">Erro na operação!</string>
 
     <!-- F -->
     <string name="close_drawer">Fechar Menu</string>
@@ -62,6 +63,8 @@ Versao %s<br><br>
     <string name="msg_error_conexao_indisponivel">Conexão indisponível. Verifique seu Wi-Fi ou 3G.</string>
     <string name="msg_error_valida_dados">Erro ao validar os dados!</string>
     <string name="msg_error_update_carro">Erro ao atualizar o carro!</string>
+    <string name="msg_error_delete_carro">Erro ao deletar o carro!</string>
+
 
     <!-- O -->
     <string name="ok">OK</string>

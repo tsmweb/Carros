@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,14 +22,18 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import br.com.tsmweb.carros.CarrosApplication;
 import br.com.tsmweb.carros.R;
+import br.com.tsmweb.carros.presentation.model.CarroBinding;
+import br.com.tsmweb.carros.presentation.viewModel.CarroVmFactory;
+import br.com.tsmweb.carros.presentation.viewModel.ViewState;
 import br.com.tsmweb.carros.view.activity.CarroActivity;
 import br.com.tsmweb.carros.databinding.FragmentCarrosBinding;
-import br.com.tsmweb.carros.domain.model.Carro;
-import br.com.tsmweb.carros.utils.AlertUtils;
 import br.com.tsmweb.carros.utils.AndroidUtils;
 import br.com.tsmweb.carros.presentation.viewModel.CarrosViewModel;
+import br.com.tsmweb.carros.view.adapter.CarroAdapter;
 
 public class CarrosFragment extends BaseFragment {
 
@@ -39,12 +42,13 @@ public class CarrosFragment extends BaseFragment {
     private CarrosViewModel carrosViewModel;
     private FragmentCarrosBinding binding;
 
+    private CarroAdapter carroAdapter;
+
     private int tipo;
     private ActionMode actionMode;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeLayout;
-    private AlertDialog alertProgress;
 
     // Método para instanciar esse fragment pelo tipo
     public static CarrosFragment newInstance(int tipo) {
@@ -72,10 +76,14 @@ public class CarrosFragment extends BaseFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_carros, container, false);
         View view = binding.getRoot();
 
+        // Cria o adapter e configura o recyclerView
+        carroAdapter = new CarroAdapter(getContext(), onClickCarro(), onLongClickCarro());
+
         recyclerView = binding.recyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(carroAdapter);
 
         progressBar = view.findViewById(R.id.progress);
 
@@ -95,24 +103,20 @@ public class CarrosFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         // Cria o viewModel
-        carrosViewModel = ViewModelProviders.of(this).get(CarrosViewModel.class);
-
-        getLifecycle().addObserver(carrosViewModel);
-        binding.setViewModel(carrosViewModel);
-
-        startViewModalObservable();
+        carrosViewModel = ViewModelProviders.of(this, new CarroVmFactory(CarrosApplication.getInstance())).get(CarrosViewModel.class);
+        subscriberViewModalObservable();
 
         if (savedInstanceState == null) {
             carrosViewModel.loadCarros(tipo);
         }
     }
 
+    // Atualiza ao fazer o gesto Pull to Refresh
     private SwipeRefreshLayout.OnRefreshListener OnRefreshListener() {
         return () -> {
-            // Atualiza ao fazer o gesto Pull to Refresh
             // Valida se existe conexão ao fazer o gesto Pull to Refresh
             if (AndroidUtils.isNetworkAvailable(getContext())) {
-                carrosViewModel.downloadCarros(tipo);
+                carrosViewModel.updateCarros(tipo);
             } else {
                 swipeLayout.setRefreshing(false);
                 snack(recyclerView, R.string.msg_error_conexao_indisponivel);
@@ -120,78 +124,107 @@ public class CarrosFragment extends BaseFragment {
         };
     }
 
-    private void startViewModalObservable() {
-        carrosViewModel.getState().observe(getViewLifecycleOwner(), state -> {
-            switch (state.status) {
-                case LOADING: // Observa o carregamento das informações da base de dados
-                    if (state.data) {
-                        progressBar.setVisibility(View.VISIBLE);
-                    } else {
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
-
-                    break;
-                case ERROR: // Observa o erro gerado nas operações com os carros
-                    if (state.data) {
-                        snack(recyclerView, "Falha na operação!");
-                    }
-
-                    break;
-                case DELETE:
-                    if (state.data) { // Observa quando um ou mais carros forem deletados
-                        snack(recyclerView, R.string.carros_excluidos_sucesso);
-                    }
-            }
+    // Aqui a view se inscreve nos observáveis do viewModel para receber notificações de mudança de estado
+    private void subscriberViewModalObservable() {
+        // Observa o carregamento das informações da base de dados
+        carrosViewModel.getLoadState().observe(getViewLifecycleOwner(), state -> {
+            handleLoadState(state);
         });
 
         // Observa o carregamento das informações do web service
-        carrosViewModel.getPullToRefresh().observe(getViewLifecycleOwner(), isRefreshing -> {
-            swipeLayout.setRefreshing(isRefreshing);
+        carrosViewModel.getUpdateState().observe(getViewLifecycleOwner(), state -> {
+            handleUpdateState(state);
+        });
+
+        // Observa quando um ou mais carros forem deletados
+        carrosViewModel.getDeleteState().observe(getViewLifecycleOwner(), state -> {
+            handleDeleteState(state);
         });
 
         // Observa e recebe o carro selecionado pelo evento Click
-        carrosViewModel.getSelected().observe(getViewLifecycleOwner(), carro -> {
-            if (actionMode == null) {
-                openDetailsCarro(carro);
-            } else { // Se a CAB está ativada
-                // Atualiza o título com a quantidade de carros selecionados
-                updateActionModeTitle();
-
-                // Redesenha a lista
-                if (recyclerView.getAdapter() != null) {
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                }
-            }
+        carrosViewModel.getCheckedCarro().observe(getViewLifecycleOwner(), carro -> {
+            handleCheckedCarro(carro);
         });
 
         // Observa e recebe o carro selecionado pelo evento LongClick
-        carrosViewModel.getSelectedLong().observe(getViewLifecycleOwner(), carro -> {
-            if (carro != null) {
-                setupActionMode();
+        carrosViewModel.getCheckedLongCarro().observe(getViewLifecycleOwner(), carro -> {
+            handleCheckedLongCarro(carro);
+        });
+    }
+
+    // Trata o resultado do carregamento das informações da base de dados
+    private void handleLoadState(final ViewState<List<CarroBinding>> state) {
+        switch (state.status) {
+            case LOADING:
+                progressBar.setVisibility(View.VISIBLE);
+                break;
+            case SUCCESS:
+                carroAdapter.setCarros(state.data);
+                progressBar.setVisibility(View.INVISIBLE);
+                break;
+            case ERROR:
+                snack(recyclerView, R.string.error_operation);
+                break;
+        }
+    }
+
+    // Trata o resultado do carregamento das informações do web service
+    private void handleUpdateState(final ViewState state) {
+        switch (state.status) {
+            case LOADING:
+                swipeLayout.setRefreshing(true);
+                break;
+            case SUCCESS:
+                swipeLayout.setRefreshing(false);
+                break;
+            case ERROR:
+                swipeLayout.setRefreshing(false);
+                snack(recyclerView, R.string.error_operation);
+                break;
+        }
+    }
+
+    // Trata o resultado de quando um ou mais carros forem deletados
+    private void handleDeleteState(final ViewState<Integer> state) {
+        switch (state.status) {
+            case SUCCESS:
+                snack(recyclerView, R.string.carros_excluidos_sucesso);
+                break;
+            case ERROR:
+                snack(recyclerView, R.string.error_operation);
+                break;
+        }
+
+        if (actionMode != null) {
+            // Encerra o action mode
+            actionMode.finish();
+        }
+    }
+
+    // Trata o resultado de um carro selecionado pelo evento Click
+    private void handleCheckedCarro(final CarroBinding carro) {
+        if (actionMode == null) {
+            openDetailsCarro(carro);
+        } else { // Se a CAB está ativada
+            // Atualiza o título com a quantidade de carros selecionados
+            updateActionModeTitle();
+
+            // Redesenha a lista
+            if (carroAdapter != null) {
+                carroAdapter.notifyDataSetChanged();
             }
-        });
+        }
+    }
 
-        // Observa o compartilhamento dos carros delecionados
-        carrosViewModel.getImageUris().observe(getViewLifecycleOwner(), uris -> {
-            shareSelectedCarros(uris);
-        });
-
-        // Observa o download das imagens dos carros selecionados
-        carrosViewModel.getDownloadingImage().observe(getViewLifecycleOwner(), isDownload -> {
-            if (isDownload) {
-                alertProgress = AlertUtils.progress(getContext(), getString(R.string.aguarde), getString(R.string.preparando_carros));
-                alertProgress.show();
-            } else {
-                if (alertProgress != null) {
-                    alertProgress.dismiss();
-                }
-            }
-        });
-
+    // Trata o resultado de um carro selecionado pelo evento LongClick
+    private void handleCheckedLongCarro(CarroBinding carro) {
+        if (carro != null) {
+            setupActionMode();
+        }
     }
 
     // Abre tela de detalhes do carro selecionado
-    private void openDetailsCarro(Carro carro) {
+    private void openDetailsCarro(CarroBinding carro) {
         Bundle bundle = new Bundle();
         bundle.putParcelable("carro", carro);
 
@@ -202,14 +235,14 @@ public class CarrosFragment extends BaseFragment {
 
     // Configura a Action Bar de Contexto (CAB)
     private void setupActionMode() {
-        if (actionMode != null || carrosViewModel.getCountSelectedCarro() == 0) { return; }
+        if (actionMode != null || carrosViewModel.getCountCheckedCarro() == 0) { return; }
 
         // Liga a action bar de contexto (CAB)
         actionMode = getAppCompatActivity().startSupportActionMode(getActionModeCallback());
 
         // Solicita ao Android para desenhar a lista novamente
-        if (recyclerView.getAdapter() != null) {
-            recyclerView.getAdapter().notifyDataSetChanged();
+        if (carroAdapter != null) {
+            carroAdapter.notifyDataSetChanged();
         }
 
         // Atualiza o título para mostrar a quantidade de carros selecionados.
@@ -218,23 +251,28 @@ public class CarrosFragment extends BaseFragment {
 
     // Atualiza o título da action bar (CAB)
     private void updateActionModeTitle() {
-        if (actionMode != null) {
-            actionMode.setTitle(R.string.selecione_carros);
-            actionMode.setSubtitle(null);
+        int countChecked = carrosViewModel.getCountCheckedCarro();
+
+        if (countChecked == 0) {
+            // Encerra o action mode
+            actionMode.finish();
+            return;
         }
 
-        int countSelected = carrosViewModel.getCountSelectedCarro();
+        if (actionMode != null) {
+            actionMode.setTitle(R.string.selecione_carros);
 
-        if (countSelected == 1) {
-            actionMode.setSubtitle(R.string.carro_selecionado);
-        } else if (countSelected > 1) {
-            actionMode.setSubtitle(getString(R.string.carros_selecionados, countSelected));
+            if (countChecked == 1) {
+                actionMode.setSubtitle(R.string.carro_selecionado);
+            } else if (countChecked > 1) {
+                actionMode.setSubtitle(getString(R.string.carros_selecionados, countChecked));
+            }
         }
     }
 
     // Compartilha os carros selecionados
     private void shareSelectedCarros(ArrayList<Uri> uris) {
-        // Cria a intent com a foto dos carros
+        // Cria a intent com as fotos dos carros
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
@@ -264,18 +302,15 @@ public class CarrosFragment extends BaseFragment {
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem item) {
                 if (item.getItemId() == R.id.action_remove) {
-                    carrosViewModel.deleteSelectedCarros();
+                    carrosViewModel.deleteCheckedCarros();
                 } else if (item.getItemId() == R.id.action_share) {
-                    // Valida de existe conexão com internet
+                    // Valida se existe conexão com a internet
                     if (AndroidUtils.isNetworkAvailable(getContext())) {
-                        carrosViewModel.shareSelectedCarros();
+                        //carrosViewModel.shareSelectedCarros();
                     } else {
                         snack(recyclerView, R.string.msg_error_conexao_indisponivel);
                     }
                 }
-
-                // Encerra o action mode
-                actionMode.finish();
 
                 return true;
             }
@@ -286,20 +321,27 @@ public class CarrosFragment extends BaseFragment {
                 actionMode = null;
 
                 // Configura todos os carros para não selecionados
-                carrosViewModel.deselectCarros();
+                carrosViewModel.uncheckCarros();
 
-                if (recyclerView.getAdapter() != null) {
-                    recyclerView.getAdapter().notifyDataSetChanged();
+                if (carroAdapter != null) {
+                    carroAdapter.notifyDataSetChanged();
                 }
             }
         };
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    private CarroAdapter.CarroOnClickListener onClickCarro() {
+        return (carro -> carrosViewModel.onCarroItemClick(carro));
+    }
 
-        getLifecycle().removeObserver(carrosViewModel);
+    private CarroAdapter.CarroOnLongClickListener onLongClickCarro() {
+        return (carro -> {
+            if (actionMode != null) {
+                return false;
+            }
+
+            return carrosViewModel.onCarroItemLongClick(carro);
+        });
     }
 
 }

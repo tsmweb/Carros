@@ -1,22 +1,20 @@
 package br.com.tsmweb.carros.presentation.viewModel;
 
-import android.app.Application;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.annotation.NonNull;
 
+import androidx.lifecycle.ViewModel;
 import br.com.tsmweb.carros.domain.interactor.carros.DeleteCarro;
 import br.com.tsmweb.carros.domain.interactor.carros.SaveCarro;
 import br.com.tsmweb.carros.domain.interactor.carros.ValidationCarro;
+import br.com.tsmweb.carros.presentation.common.SingleLiveEvent;
 import br.com.tsmweb.carros.presentation.mapper.CarroMapper;
 import br.com.tsmweb.carros.presentation.model.CarroBinding;
 import io.reactivex.observers.DisposableSingleObserver;
 
-public class CarroViewModel extends AndroidViewModel {
+public class CarroViewModel extends ViewModel {
 
     private static final String TAG = CarroViewModel.class.getSimpleName();
 
@@ -26,16 +24,14 @@ public class CarroViewModel extends AndroidViewModel {
     private final CarroMapper carroMapper;
 
     private MutableLiveData<ViewState<CarroBinding>> loadState = new MutableLiveData<>();
-    private MutableLiveData<ViewState<Long>> updateState = new MutableLiveData<>();
-    private MutableLiveData<ViewState<Integer>> deleteState = new MutableLiveData<>();
+    private SingleLiveEvent<ViewState<Long>> updateState = new SingleLiveEvent<>();
+    private SingleLiveEvent<ViewState<Integer>> deleteState = new SingleLiveEvent<>();
     private MutableLiveData<ViewState<String>> validationState = new MutableLiveData<>();
 
     private CarroBinding carro;
 
-    public CarroViewModel(@NonNull Application application, @NonNull SaveCarro saveCarro, @NonNull DeleteCarro deleteCarro,
+    public CarroViewModel(@NonNull SaveCarro saveCarro, @NonNull DeleteCarro deleteCarro,
                           @NonNull ValidationCarro validationCarro, @NonNull CarroMapper carroMapper) {
-        super(application);
-
         this.saveCarro = saveCarro;
         this.deleteCarro = deleteCarro;
         this.validationCarro = validationCarro;
@@ -64,40 +60,34 @@ public class CarroViewModel extends AndroidViewModel {
     }
 
     public void onCarroUpdate() {
-        AtomicBoolean isValid = new AtomicBoolean(true);
-
         // Verifica se os dados do carro são válidos
         validationCarro.execute(new DisposableSingleObserver<String>() {
             @Override
             public void onSuccess(String field) {
-                if (field != null) {
-                    isValid.set(false);
+                if (field != "OK") {
                     validationState.postValue(ViewState.viewState(ViewState.Status.INVALID, field));
+                    return;
                 }
+
+                // Salva as alterações no banco de dados
+                saveCarro.execute(new DisposableSingleObserver<Long>() {
+                    @Override
+                    public void onSuccess(Long aLong) {
+                        updateState.postValue(ViewState.viewState(ViewState.Status.SUCCESS, aLong));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        updateState.postValue(ViewState.viewState(ViewState.Status.ERROR, e));
+                    }
+                }, SaveCarro.Params.getParams(carroMapper.toDomain(carro)));
             }
 
             @Override
             public void onError(Throwable e) {
-                updateState.postValue(ViewState.viewState(ViewState.Status.ERROR, e));
+                validationState.postValue(ViewState.viewState(ViewState.Status.ERROR, e));
             }
         }, ValidationCarro.Params.getParams(carroMapper.toDomain(carro)));
-
-        if (!isValid.get()) {
-            return;
-        }
-
-        // Salva as alterações no banco de dados
-        saveCarro.execute(new DisposableSingleObserver<Long>() {
-            @Override
-            public void onSuccess(Long aLong) {
-                updateState.postValue(ViewState.viewState(ViewState.Status.SUCCESS, aLong));
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                updateState.postValue(ViewState.viewState(ViewState.Status.ERROR, e));
-            }
-        }, SaveCarro.Params.getParams(carroMapper.toDomain(carro)));
     }
 
     public void onCarroDelete() {

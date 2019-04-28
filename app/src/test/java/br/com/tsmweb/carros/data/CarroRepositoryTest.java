@@ -18,6 +18,7 @@ import br.com.tsmweb.carros.data.source.CarroLocalDataSource;
 import br.com.tsmweb.carros.data.source.CarroRemoteDataSource;
 import br.com.tsmweb.carros.domain.model.Carro;
 import br.com.tsmweb.carros.domain.repository.CarroRepository;
+import br.com.tsmweb.carros.utils.AppUtils;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
@@ -35,6 +36,7 @@ public class CarroRepositoryTest {
     private Carro dummyCarro;
     private List<Carro> dummyCarros;
     private  int tipo;
+    private String tipoStr;
 
     @Before
     public void init() {
@@ -44,6 +46,7 @@ public class CarroRepositoryTest {
         dummyCarro = DataFactory.makeDummyCarro(1);
         dummyCarros = DataFactory.makeDummyListCarro(3);
         tipo = R.string.classicos;
+        tipoStr = AppUtils.getTipoCarroByResource(tipo);
     }
 
     @Test
@@ -159,7 +162,36 @@ public class CarroRepositoryTest {
     }
 
     @Test
+    public void deleteCarroByTipoComplete() {
+        stubDeleteCarrosByTipo_CarroLocalDataSource(Single.just(dummyCarros.size()));
+
+        carroRepository.deleteCarrosByTipo(tipoStr)
+                .test()
+                .assertComplete();
+    }
+
+    @Test
+    public void deleteCarrosByTipoSuccess() {
+        stubDeleteCarrosByTipo_CarroLocalDataSource(Single.just(dummyCarros.size()));
+
+        carroRepository.deleteCarrosByTipo(tipoStr)
+                .test()
+                .assertValue(it -> it == dummyCarros.size());
+    }
+
+    @Test
+    public void deleteCarrosByTipoErrors() {
+        Throwable err = new Throwable("Test Error");
+        stubDeleteCarrosByTipo_CarroLocalDataSource(Single.error(err));
+
+        carroRepository.deleteCarrosByTipo(tipoStr)
+                .test()
+                .assertError(err);
+    }
+
+    @Test
     public void updateCarrosComplete() {
+        stubDeleteCarrosByTipo_CarroLocalDataSource(Single.just(dummyCarros.size()));
         stubGetCarros_CarroRemoteDataSource(Single.just(dummyCarros));
         stubSaveCarro_CarroLocalDataSource(Single.just(1L));
 
@@ -171,6 +203,7 @@ public class CarroRepositoryTest {
     @Test
     public void updateCarrosRemoteErrors() {
         Throwable err = new Throwable("Test Error");
+        stubDeleteCarrosByTipo_CarroLocalDataSource(Single.just(dummyCarros.size()));
         stubGetCarros_CarroRemoteDataSource(Single.error(err));
         stubSaveCarro_CarroLocalDataSource(Single.just(1L));
 
@@ -182,6 +215,7 @@ public class CarroRepositoryTest {
     @Test
     public void updateCarrosLocalErrors() {
         Throwable err = new Throwable("Test Error");
+        stubDeleteCarrosByTipo_CarroLocalDataSource(Single.just(dummyCarros.size()));
         stubGetCarros_CarroRemoteDataSource(Single.just(dummyCarros));
         stubSaveCarro_CarroLocalDataSource(Single.error(err));
 
@@ -200,6 +234,10 @@ public class CarroRepositoryTest {
 
     private void stubDeleteCarros_CarroLocalDataSource(Single single) {
         when(carroLocalDataSource.delete(anyList())).thenReturn(single);
+    }
+
+    private void stubDeleteCarrosByTipo_CarroLocalDataSource(Single single) {
+        when(carroLocalDataSource.deleteCarrosByTipo(any())).thenReturn(single);
     }
 
     private void stubGetCarrosByTipo_CarroLocalDataSource(Flowable flowable) {

@@ -19,6 +19,7 @@ import br.com.tsmweb.carros.data_local.dao.CarroDAO;
 import br.com.tsmweb.carros.data_local.db.CarrosDatabase;
 import br.com.tsmweb.carros.data_local.mapper.CarroMapper;
 import br.com.tsmweb.carros.domain.model.Carro;
+import br.com.tsmweb.carros.utils.AppUtils;
 
 @RunWith(AndroidJUnit4.class)
 public class CarroLocalDataSourceTest {
@@ -31,6 +32,8 @@ public class CarroLocalDataSourceTest {
     private CarroLocalDataSource carroLocalDataSource;
 
     private Carro dummyCarro;
+    private int tipo;
+    private String tipoStr;
 
     @Before
     public void init() {
@@ -42,6 +45,9 @@ public class CarroLocalDataSourceTest {
         carroDAO = carrosDatabase.carroDAO();
         carroLocalDataSource = new CarroLocalDataSourceImpl(carroDAO, new CarroMapper());
         dummyCarro = DataFactory.getDummyCarro();
+
+        tipo = R.string.classicos;
+        tipoStr = AppUtils.getTipoCarroByResource(tipo);
     }
 
     @After
@@ -79,12 +85,34 @@ public class CarroLocalDataSourceTest {
     }
 
     @Test
+    public void deleteCarrosByTipoComplete() {
+        carroLocalDataSource.save(dummyCarro)
+                .test()
+                .assertComplete();
+
+        carroLocalDataSource.deleteCarrosByTipo(tipoStr)
+                .test()
+                .assertComplete();
+    }
+
+    @Test
+    public void deleteCarrosByTipoSuccess() {
+        carroLocalDataSource.save(dummyCarro)
+                .test()
+                .assertComplete();
+
+        carroLocalDataSource.deleteCarrosByTipo(tipoStr)
+                .test()
+                .assertValue(1);
+    }
+
+    @Test
     public void getCarrosByTipo() {
         carroLocalDataSource.save(dummyCarro)
                 .test()
                 .assertComplete();
 
-        carroLocalDataSource.getCarrosByTipo(R.string.classicos)
+        carroLocalDataSource.getCarrosByTipo(tipo)
                 .test()
                 .assertValue(it -> it != null && it.contains(dummyCarro));
     }

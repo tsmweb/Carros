@@ -14,6 +14,8 @@ public interface CarroLocalDataSource {
 
     Single<Integer> delete(List<Carro> carros);
 
+    Single<Integer> deleteCarrosByTipo(String tipo);
+
     Flowable<List<Carro>> getCarrosByTipo(int tipo);
 
 }

@@ -12,7 +12,6 @@ import br.com.tsmweb.carros.utils.AppUtils;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 
@@ -44,6 +43,11 @@ public class CarroRepositoryImpl implements CarroRepository {
     }
 
     @Override
+    public Single<Integer> deleteCarrosByTipo(String tipo) {
+        return carroLocalDataSource.deleteCarrosByTipo(tipo);
+    }
+
+    @Override
     public Flowable<List<Carro>> getCarrosByTipo(int tipo) {
         return carroLocalDataSource.getCarrosByTipo(tipo);
         /*
@@ -67,12 +71,20 @@ public class CarroRepositoryImpl implements CarroRepository {
 
             Disposable disposable = carroRemoteDataSource.getCarros(tipo)
                     .subscribe(carros -> {
+                        deleteCarrosByTipo(tipoStr)
+                                .subscribe(
+                                        qtde -> {},
+                                        emitter::onError
+                                );
+
                         for (Carro carro : carros) {
                             carro.setTipo(tipoStr);
-                            carroLocalDataSource.save(carro)
-                                .subscribe(
-                                        id -> {},//Log.d(TAG, "Salvando o carro " + id +" - "+ carro.getNome()),
-                                        emitter::onError);
+
+                            save(carro)
+                                    .subscribe(
+                                            id -> {},
+                                            emitter::onError
+                                    );
                         }
                     }, emitter::onError);
 

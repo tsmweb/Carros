@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="viewModel"
-            type="br.com.tsmweb.carros.presentation.viewModel.CarrosViewModel" />
+
     </data>
 
     <FrameLayout
@@ -28,8 +26,7 @@
                 android:dividerHeight="0dp"
                 android:listSelector="@android:color/transparent"
                 android:scrollbarStyle="outsideOverlay"
-                android:scrollbars="vertical"
-                android:adapter="@{viewModel.adapter}" />
+                android:scrollbars="vertical" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
