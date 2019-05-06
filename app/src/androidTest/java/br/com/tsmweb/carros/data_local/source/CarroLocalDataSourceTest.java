@@ -13,11 +13,12 @@ import androidx.room.Room;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 import br.com.tsmweb.carros.R;
+import br.com.tsmweb.carros.data.data_local.source.CarroLocalDataSourceImpl;
 import br.com.tsmweb.carros.data.source.CarroLocalDataSource;
 import br.com.tsmweb.carros.data_local.DataFactory;
-import br.com.tsmweb.carros.data_local.dao.CarroDAO;
-import br.com.tsmweb.carros.data_local.db.CarrosDatabase;
-import br.com.tsmweb.carros.data_local.mapper.CarroMapper;
+import br.com.tsmweb.carros.data.data_local.dao.CarroDAO;
+import br.com.tsmweb.carros.data.data_local.db.CarrosDatabase;
+import br.com.tsmweb.carros.data.data_local.mapper.CarroMapper;
 import br.com.tsmweb.carros.domain.model.Carro;
 import br.com.tsmweb.carros.utils.AppUtils;
 

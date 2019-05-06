@@ -1,7 +1,5 @@
 package br.com.tsmweb.carros.data.repository;
 
-import android.util.Log;
-
 import java.util.List;
 
 import br.com.tsmweb.carros.data.source.CarroLocalDataSource;

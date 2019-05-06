@@ -13,9 +13,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
+
+import br.com.tsmweb.carros.data.data_local.dao.CarroDAO;
 import br.com.tsmweb.carros.data_local.DataFactory;
-import br.com.tsmweb.carros.data_local.db.CarrosDatabase;
-import br.com.tsmweb.carros.data_local.model.CarroEntity;
+import br.com.tsmweb.carros.data.data_local.db.CarrosDatabase;
+import br.com.tsmweb.carros.data.data_local.model.CarroEntity;
 
 @RunWith(AndroidJUnit4.class)
 public class CarroDaoTest {

@@ -1,11 +1,13 @@
 package br.com.tsmweb.carros;
 
+import android.os.Environment;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import br.com.tsmweb.carros.data_remote.model.CarroEntity;
-import br.com.tsmweb.carros.data_remote.model.CarrosResponse;
+import br.com.tsmweb.carros.data.data_remote.model.CarroEntity;
+import br.com.tsmweb.carros.data.data_remote.model.CarrosResponse;
 import br.com.tsmweb.carros.domain.model.Carro;
 
 public class DataFactory {
@@ -70,6 +72,21 @@ public class DataFactory {
         dummyCarroResponse.carros = carroResult;
 
         return dummyCarroResponse;
+    }
+
+    public static String makeDummyPath(String fileName) {
+        String path = Environment.DIRECTORY_PICTURES + "/" + fileName;
+        return path;
+    }
+
+    public static List<String> makeDummyListPath(int c) {
+        List<String> paths = new ArrayList<>();
+
+        for (int i = 0; i < c; i++) {
+            paths.add(makeDummyPath("Carro-"+c));
+        }
+
+        return paths;
     }
 
 }

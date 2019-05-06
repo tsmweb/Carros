@@ -22,7 +22,7 @@ import br.com.tsmweb.carros.R;
 
 public class AndroidUtils {
 
-    protected static final String TAG = br.com.tsmweb.carros.utils.AndroidUtils.class.getName();
+    protected static final String TAG = AndroidUtils.class.getName();
 
     /**
      * <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

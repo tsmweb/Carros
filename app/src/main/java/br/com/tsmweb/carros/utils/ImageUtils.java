@@ -3,6 +3,7 @@ package br.com.tsmweb.carros.utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
+
 import androidx.annotation.AnyRes;
 import androidx.annotation.NonNull;
 

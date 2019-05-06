@@ -3,7 +3,7 @@ package br.com.tsmweb.carros.data_local;
 import java.util.UUID;
 
 import br.com.tsmweb.carros.domain.model.Carro;
-import br.com.tsmweb.carros.data_local.model.CarroEntity;
+import br.com.tsmweb.carros.data.data_local.model.CarroEntity;
 
 public class DataFactory {
 

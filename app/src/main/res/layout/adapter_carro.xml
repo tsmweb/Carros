@@ -5,7 +5,7 @@
     <data>
         <variable
             name="carro"
-            type="br.com.tsmweb.carros.presentation.model.CarroBinding" />
+            type="br.com.tsmweb.carros.ui.presentation.model.CarroBinding" />
     </data>
 
     <androidx.cardview.widget.CardView

@@ -10,13 +10,13 @@
     <application
         android:name=".CarrosApplication"
         android:allowBackup="true"
-        android:backupAgent=".backup.ExemploBackupAgent"
+        android:backupAgent=".device.utils.backup.ExemploBackupAgent"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
 
-        <activity android:name=".view.activity.SplashActivity">
+        <activity android:name=".ui.view.activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,38 +24,38 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.activity.MainActivity"
+            android:name=".ui.view.activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar.NavDrawer"
             android:launchMode="singleTop" />
         <activity
-            android:name=".view.activity.CarroActivity"
-            android:parentActivityName=".view.activity.MainActivity">
+            android:name=".ui.view.activity.CarroActivity"
+            android:parentActivityName=".ui.view.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.activity.MainActivity" />
+                android:value=".ui.view.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".view.activity.CarrosActivity"
-            android:parentActivityName=".view.activity.MainActivity">
+            android:name=".ui.view.activity.CarrosActivity"
+            android:parentActivityName=".ui.view.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.activity.MainActivity" />
+                android:value=".ui.view.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".view.activity.SiteLivroActivity"
-            android:parentActivityName=".view.activity.MainActivity">
+            android:name=".ui.view.activity.SiteLivroActivity"
+            android:parentActivityName=".ui.view.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.activity.MainActivity" />
+                android:value=".ui.view.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".view.activity.ConfiguracoesActivity"
+            android:name=".ui.view.activity.ConfiguracoesActivity"
             android:label="@string/configuracoes"
-            android:parentActivityName=".view.activity.MainActivity"
+            android:parentActivityName=".ui.view.activity.MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.activity.MainActivity" />
+                android:value=".ui.view.activity.MainActivity" />
         </activity>
 
         <!-- Chave do backup service do Google -->
